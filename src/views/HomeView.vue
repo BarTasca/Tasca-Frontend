@@ -2,6 +2,8 @@
 </script>
 
 <template>
-  <main>
-  </main>
+  <section>
+    <h1>Home</h1>
+    <p>HomeView</p>
+  </section>
 </template>
