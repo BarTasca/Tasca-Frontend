@@ -1,0 +1,192 @@
+diff --git src/layouts/DefaultLayout.vue src/layouts/DefaultLayout.vue
+index 19d6036..518d280 100644
+--- src/layouts/DefaultLayout.vue
++++ src/layouts/DefaultLayout.vue
+@@ -1,14 +1,15 @@
+ <template>
+   <div class="layout">
+     <header class="layout__header">
+       <nav class="layout__nav">
+         <RouterLink to="/">Inicio</RouterLink>
+         <span class="mx-2">·</span>
+         <RouterLink to="/staff">Staff</RouterLink>
++        <RouterLink to="/ticket/01K4ST1RTAQ0A9S75DG5418QG9">Ticket (demo)</RouterLink>
+       </nav>
+     </header>
+     <main class="layout__main">
+       <RouterView />
+     </main>
+   </div>
+ </template>
+diff --git src/router/index.ts src/router/index.ts
+index 2c5354e..4013fc9 100644
+--- src/router/index.ts
++++ src/router/index.ts
+@@ -1,47 +1,55 @@
+-import { createRouter, createWebHistory, type RouteLocationNormalized, RouterView } from 'vue-router';
+-import DefaultLayout from '@/layouts/DefaultLayout.vue';
+-import HomeView from '@/views/HomeView.vue';
+-import NotFound from '@/views/NotFound.vue';
+-import LoginView from '@/views/LoginView.vue';
+-import StaffHomeView from '@/views/staff/StaffHomeView.vue';
+-import { useAuthStore } from '@/stores/auth';
++import {
++  createRouter,
++  createWebHistory,
++  type RouteLocationNormalized,
++  RouterView,
++} from 'vue-router'
++import DefaultLayout from '@/layouts/DefaultLayout.vue'
++import HomeView from '@/views/HomeView.vue'
++import NotFound from '@/views/NotFound.vue'
++import LoginView from '@/views/LoginView.vue'
++import StaffHomeView from '@/views/staff/StaffHomeView.vue'
++import { useAuthStore } from '@/stores/auth'
++import TicketStatusView from '@/views/TicketStatusView.vue'
++import TicketJoinView from '@/views/TicketJoinView.vue';
++
+ 
+ const routes = [
+   {
+     path: '/',
+     component: DefaultLayout,
+     children: [
+       { path: '', name: 'home', component: HomeView },
+       { path: 'login', name: 'login', component: LoginView },
+       {
+         path: 'staff',
+-        // component: { template: '<RouterView />' },
+         component: RouterView,
+         meta: { requiresAuth: true },
+-        children: [
+-          { path: '', name: 'staff.home', component: StaffHomeView },
+-        ],
++        children: [{ path: '', name: 'staff.home', component: StaffHomeView }],
+       },
+     ],
+   },
++  { path: '/join', name: 'ticket.join', component: TicketJoinView },
++  { path: '/ticket/:publicId', name: 'ticket.status', component: TicketStatusView },
++
+   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
+-];
++]
+ 
+ const router = createRouter({
+   history: createWebHistory(import.meta.env.BASE_URL),
+   routes,
+-});
++})
+ 
+ router.beforeEach((to: RouteLocationNormalized) => {
+-  if (!to.matched.some(r => r.meta?.requiresAuth)) return true;
++  if (!to.matched.some((r) => r.meta?.requiresAuth)) return true
+ 
+-  const auth = useAuthStore();
+-  if (auth.isAuthenticated) return true;
++  const auth = useAuthStore()
++  if (auth.isAuthenticated) return true
+ 
+   return {
+     name: 'login',
+     query: { redirect: to.fullPath },
+-  };
+-});
++  }
++})
+ 
+-export default router;
++export default router
+diff --git src/services/tickets.ts src/services/tickets.ts
+index 5399bcc..3ebb305 100644
+--- src/services/tickets.ts
++++ src/services/tickets.ts
+@@ -1,27 +1,26 @@
+ import { apiFetch } from '../lib/http';
+ import { STORAGE_KEYS } from '../config';
+ import type { CreateTicketDto, TicketDetailDto, TicketStatusDto } from '../types/tickets';
+ 
+ export async function createTicket(data: CreateTicketDto): Promise<TicketDetailDto> {
+-  return apiFetch<TicketDetailDto>('/api/tickets', { method: 'POST', json: data });
++  return apiFetch<TicketDetailDto>('/api/Tickets', { method: 'POST', json: data });
+ }
+ 
+ export interface TicketTokenResponse { token: string }
+ 
+ export async function createTicketToken(publicId: string): Promise<TicketTokenResponse> {
+-  return apiFetch<TicketTokenResponse>(`/api/tickets/${encodeURIComponent(publicId)}/token`, {
++  return apiFetch<TicketTokenResponse>(`/api/Tickets/${publicId}/token`, {
+     method: 'POST',
+   });
+ }
+ 
+ export function persistTicketToken(token: string | null): void {
+   if (token) localStorage.setItem(STORAGE_KEYS.ticketToken, token);
+   else localStorage.removeItem(STORAGE_KEYS.ticketToken);
+ }
+ 
+ export async function getTicketStatus(publicId: string): Promise<TicketStatusDto> {
+-  // Requiere Authorization: Bearer (token de ticket) o token de staff
+-  return apiFetch<TicketStatusDto>(`/api/tickets/${encodeURIComponent(publicId)}/status`, {
++  return apiFetch<TicketStatusDto>(`/api/Tickets/${publicId}/status`, {
+     auth: 'ticket',
+   });
+ }
+diff --git src/types/tickets.ts src/types/tickets.ts
+index ac3fc08..faaa1ef 100644
+--- src/types/tickets.ts
++++ src/types/tickets.ts
+@@ -1,28 +1,33 @@
+ export interface CreateTicketDto {
+-  fullName: string;
+-  phone: string;
+-  peopleCount: number;
++  fullName: string
++  phone: string
++  peopleCount: number
+ }
+ 
+ export interface TicketDetailDto {
+-  id: number;
+-  peopleCount: number;
+-  position: number;
+-  status: string;
+-  createdAt: string;
+-  notifiedAt?: string | null;
+-  confirmedAt?: string | null;
+-  expiresAt?: string | null;
+-  ahead: number;
+-  customerFullName: string;
++  id: number
++  publicId: string
++  peopleCount: number
++  position: number
++  status: string
++  createdAt: string
++  notifiedAt?: string | null
++  confirmedAt?: string | null
++  expiresAt?: string | null
++  ahead: number
++  customerFullName: string
+ }
+ 
+ export interface TicketStatusDto {
+-  publicId: string;
+-  status: string;
+-  ahead: number;
+-  position: number;
+-  peopleCount: number;
+-  createdAt: string;
+-  notifiedAt?: string | null;
++  publicId: string
++  status: string
++  ahead: number
++  position: number
++  peopleCount: number
++  createdAt: string
++  notifiedAt?: string | null
++}
++
++export interface TicketTokenResponse {
++  token: string
+ }

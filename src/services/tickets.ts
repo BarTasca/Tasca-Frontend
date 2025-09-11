@@ -3,13 +3,13 @@ import { STORAGE_KEYS } from '../config';
 import type { CreateTicketDto, TicketDetailDto, TicketStatusDto } from '../types/tickets';
 
 export async function createTicket(data: CreateTicketDto): Promise<TicketDetailDto> {
-  return apiFetch<TicketDetailDto>('/api/tickets', { method: 'POST', json: data });
+  return apiFetch<TicketDetailDto>('/api/Tickets', { method: 'POST', json: data });
 }
 
 export interface TicketTokenResponse { token: string }
 
 export async function createTicketToken(publicId: string): Promise<TicketTokenResponse> {
-  return apiFetch<TicketTokenResponse>(`/api/tickets/${encodeURIComponent(publicId)}/token`, {
+  return apiFetch<TicketTokenResponse>(`/api/Tickets/${publicId}/token`, {
     method: 'POST',
   });
 }
@@ -20,8 +20,7 @@ export function persistTicketToken(token: string | null): void {
 }
 
 export async function getTicketStatus(publicId: string): Promise<TicketStatusDto> {
-  // Requiere Authorization: Bearer (token de ticket) o token de staff
-  return apiFetch<TicketStatusDto>(`/api/tickets/${encodeURIComponent(publicId)}/status`, {
+  return apiFetch<TicketStatusDto>(`/api/Tickets/${publicId}/status`, {
     auth: 'ticket',
   });
 }
