@@ -7,6 +7,7 @@ import {
   notifyTicket,
 } from '@/services/staff';
 import type { TicketStaffListDto } from '@/types/staff';
+import { ensureAuth, registerTicketEventHandlers, joinStaffGroup } from '@/services/signalR';
 
 interface State {
   items: TicketStaffListDto[];
@@ -54,3 +55,16 @@ export const useStaffTicketsStore = defineStore('staffTickets', {
     },
   },
 });
+
+
+
+export async function initStaffTicketsSignalR(store = useStaffTicketsStore()): Promise<() => void> {
+  await ensureAuth('staff');
+  await joinStaffGroup();
+
+  const unsubscribe = registerTicketEventHandlers(async (payload: any) => {
+    console.log('[SignalR staff] event =>', payload);
+    try { await store.fetchAll(); } catch {}
+  });
+  return unsubscribe;
+}

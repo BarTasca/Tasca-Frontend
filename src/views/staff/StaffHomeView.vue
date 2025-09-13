@@ -52,16 +52,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, onBeforeUnmount } from 'vue';
 import { useStaffTicketsStore } from '@/stores/staffTickets';
+import { initStaffTicketsSignalR } from '@/stores/staffTickets';
 
 const store = useStaffTicketsStore();
 const loading = computed(() => store.loading);
 const error = computed(() => store.error);
 const tickets = computed(() => store.items);
+let unsubscribe: null | (() => void) = null;
 
-onMounted(() => {
+onMounted(async () => {
   if (!store.items.length) store.fetchAll();
+  unsubscribe = await initStaffTicketsSignalR();
+});
+onBeforeUnmount(() => {
+  if (unsubscribe) unsubscribe();
 });
 
 function onRefresh() {
