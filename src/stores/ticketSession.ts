@@ -6,6 +6,8 @@ import {
   getTicketStatus,
 } from '@/services/tickets'
 import type { CreateTicketDto, TicketStatusDto } from '@/types/tickets'
+import { ensureAuth, registerTicketEventHandlers, joinTicketGroup } from '@/services/signalR'
+import { ensureTicketTokenFor } from '@/services/tickets'
 
 interface State {
   loading: boolean
@@ -58,3 +60,24 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     },
   },
 })
+
+export async function initTicketSessionSignalR(
+  publicId: string,
+  store = useTicketSessionStore(),
+): Promise<() => void> {
+  
+  await ensureTicketTokenFor(publicId)
+  await ensureAuth('ticket')
+  await joinTicketGroup(publicId)
+
+  const unsubscribe = registerTicketEventHandlers(async (payload: any) => {
+    const evPublicId: string | undefined = payload?.publicId ?? payload?.PublicId
+    console.log('[SignalR ticket] event =>', payload)
+    if (evPublicId && evPublicId !== publicId) return
+    try {
+      await store.fetchStatus(publicId)
+    } catch {}
+  })
+
+  return unsubscribe
+}

@@ -32,17 +32,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, computed } from 'vue'
+import { onMounted, watch, computed, onBeforeUnmount  } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTicketSessionStore } from '@/stores/ticketSession'
+import { initTicketSessionSignalR } from '@/stores/ticketSession';
+
 
 const route = useRoute()
 const store = useTicketSessionStore()
+let unsubscribe: null | (() => void) = null;
 
 const publicId = computed(() => String(route.params.publicId ?? ''))
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
 const status = computed(() => store.status)
+
+onMounted(async () => {
+  await load();
+  if (publicId.value) {
+    unsubscribe = await initTicketSessionSignalR(publicId.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (unsubscribe) unsubscribe();
+});
 
 async function load() {
   if (!publicId.value) return
@@ -62,6 +76,5 @@ function format(iso: string): string {
   }
 }
 
-onMounted(load)
 watch(publicId, load)
 </script>
