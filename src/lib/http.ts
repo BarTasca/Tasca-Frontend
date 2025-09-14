@@ -1,4 +1,4 @@
-import { API_BASE_URL, STORAGE_KEYS } from '../config';
+import { API_BASE_URL, STORAGE_KEYS } from '@/config';
 
 export class ApiError extends Error {
   status: number;
@@ -27,10 +27,14 @@ function readToken(kind: AuthKind): string | null {
 
 export async function apiFetch<T>(path: string, init: ApiInit = {}): Promise<T> {
   const base = API_BASE_URL.replace(/\/+$/, '');
-  const url = `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+  const rel = `/${String(path).replace(/^\/+/, '')}`;
+  const url = path.startsWith('http') ? path : `${base}${rel}`;
 
   const headers = new Headers(init.headers ?? {});
-  if (init.json !== undefined) headers.set('Content-Type', 'application/json');
+  if (!headers.has('Accept')) headers.set('Accept', 'application/json');
+  if (init.json !== undefined && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
 
   if (init.auth) {
     const token = readToken(init.auth);
@@ -39,6 +43,7 @@ export async function apiFetch<T>(path: string, init: ApiInit = {}): Promise<T> 
 
   const res = await fetch(url, {
     ...init,
+    method: init.method ?? (init.json !== undefined ? 'POST' : 'GET'),
     headers,
     body:
       init.json !== undefined
@@ -46,13 +51,25 @@ export async function apiFetch<T>(path: string, init: ApiInit = {}): Promise<T> 
         : (init.body as BodyInit | null | undefined),
   });
 
-  const isJson = (res.headers.get('content-type') ?? '').includes('application/json');
-  const payload = isJson ? await res.json().catch(() => undefined) : undefined;
-
-  if (!res.ok) {
-    const message = (payload as any)?.error || (payload as any)?.message || `HTTP ${res.status}`;
-    throw new ApiError(message, res.status, url, payload);
+  if (res.ok) {
+    if (res.status === 204) return undefined as unknown as T;
+    const ct = res.headers.get('content-type') ?? '';
+    if (ct.includes('application/json')) {
+      return (await res.json()) as T;
+    }
+    return (await res.text()) as unknown as T;
   }
 
-  return (payload as T) ?? (undefined as T);
+  const ct = res.headers.get('content-type') ?? '';
+  let payload: unknown = undefined;
+  if (ct.includes('application/json')) {
+    try { payload = await res.json(); } catch {}
+  }
+  const msg =
+    (payload as any)?.error ||
+    (payload as any)?.message ||
+    (payload as any)?.title ||
+    `HTTP ${res.status}`;
+
+  throw new ApiError(msg, res.status, url, payload);
 }
