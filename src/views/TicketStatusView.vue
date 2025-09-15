@@ -1,46 +1,57 @@
 <template>
-  <section class="p-4 space-y-3">
-    <header>
-      <h1 class="text-xl font-semibold">Estado del turno</h1>
-      <p class="text-sm text-gray-600">Seguimiento de tu posición en la cola.</p>
-    </header>
+  <v-container class="py-10">
+    <v-row justify="center">
+      <v-col cols="12" sm="10" md="8" lg="6">
+        <v-card rounded="xl" elevation="3" max-width="640" class="mx-auto">
+          <v-card-item class="bg-primary text-primary-contrast">
+            <v-card-title >Estado del turno</v-card-title>
+            <v-card-subtitle>Seguimiento de tu posición en la cola.</v-card-subtitle>
+          </v-card-item>
 
-    <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
-    <div v-if="loading" class="text-sm">Cargando…</div>
+          <v-divider></v-divider>
 
-    <div v-if="status" class="space-y-1">
-      <div><strong>Estado:</strong> {{ status.status }}</div>
-      <div><strong>Posición:</strong> {{ status.position }}</div>
-      <div><strong>Por delante:</strong> {{ status.ahead }}</div>
-      <div><strong>Personas en tu grupo:</strong> {{ status.peopleCount }}</div>
-      <div>
-        <strong>Creado:</strong>
-        <time :datetime="status.createdAt">{{ format(status.createdAt) }}</time>
-      </div>
-      <div v-if="status.notifiedAt">
-        <strong>Avisado:</strong>
-        <time :datetime="status.notifiedAt">{{ format(status.notifiedAt) }}</time>
-      </div>
-    </div>
+          <v-card-text>
+            <v-alert
+              v-if="error"
+              type="error"
+              variant="tonal"
+              density="comfortable"
+              class="mb-3"
+            >
+              {{ error }}
+            </v-alert>
 
-    <div class="flex gap-2">
-      <button class="border rounded px-3 py-1" @click="refresh" :disabled="loading">
-        Actualizar
-      </button>
-    </div>
-  </section>
+            <div v-if="loading" class="d-flex align-center ga-3">
+              <v-progress-circular indeterminate size="20"></v-progress-circular>
+              <span class="text-body-2">Cargando…</span>
+            </div>
+
+            <div v-if="status && !loading" class="d-flex flex-column ga-1">
+              <div><strong>Estado:</strong> {{ status.status }}</div>
+              <div><strong>Por delante:</strong> {{ status.ahead }}</div>
+              <div><strong>Personas en tu grupo:</strong> {{ status.peopleCount }}</div>
+
+              <div v-if="status.notifiedAt">
+                <strong>Avisado:</strong>
+                <time :datetime="status.notifiedAt">{{ format(status.notifiedAt) }}</time>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, computed, onBeforeUnmount  } from 'vue'
+import { onMounted, watch, computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTicketSessionStore } from '@/stores/ticketSession'
-import { initTicketSessionSignalR } from '@/stores/ticketSession';
-
+import { initTicketSessionSignalR } from '@/stores/ticketSession'
 
 const route = useRoute()
 const store = useTicketSessionStore()
-let unsubscribe: null | (() => void) = null;
+let unsubscribe: null | (() => void) = null
 
 const publicId = computed(() => String(route.params.publicId ?? ''))
 const loading = computed(() => store.loading)
@@ -48,15 +59,15 @@ const error = computed(() => store.error)
 const status = computed(() => store.status)
 
 onMounted(async () => {
-  await load();
+  await load()
   if (publicId.value) {
-    unsubscribe = await initTicketSessionSignalR(publicId.value);
+    unsubscribe = await initTicketSessionSignalR(publicId.value)
   }
-});
+})
 
 onBeforeUnmount(() => {
-  if (unsubscribe) unsubscribe();
-});
+  if (unsubscribe) unsubscribe()
+})
 
 async function load() {
   if (!publicId.value) return
