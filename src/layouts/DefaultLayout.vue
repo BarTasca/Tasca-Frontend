@@ -1,15 +1,16 @@
+<script setup lang="ts">
+</script>
+
 <template>
-  <div class="layout">
-    <header class="layout__header">
-      <nav class="layout__nav">
-        <RouterLink to="/">Inicio</RouterLink>
-        <span class="mx-2">·</span>
-        <RouterLink to="/staff">Staff</RouterLink>
-        <RouterLink to="/join">Ticket (demo)</RouterLink>
-      </nav>
-    </header>
-    <main class="layout__main">
-      <RouterView />
-    </main>
-  </div>
+  <main class="container">
+    <RouterView />
+  </main>
 </template>
+
+<style scoped>
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+</style>
