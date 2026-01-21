@@ -5,7 +5,18 @@
         <div class="text-h6">Panel de staff</div>
         <div class="text-caption text-medium-emphasis">Gestión de la cola en tiempo real</div>
       </div>
+
+      <v-switch
+        v-model="pendingIsOpen"
+        color="primary"
+        inset
+        @click="onToggleAttempt"
+      />
     </v-sheet>
+
+    <v-alert v-if="serviceStore.error" type="error" variant="tonal" class="mb-3">
+      {{ serviceStore.error }}
+    </v-alert>
 
     <v-alert v-if="error" type="error" variant="tonal" class="mb-3">{{ error }}</v-alert>
 
@@ -24,28 +35,105 @@
         @notify="onNotify"
       />
     </div>
+
+    <v-dialog v-model="confirmDialog" max-width="420">
+      <v-card>
+        <v-card-title class="text-h6">Confirmar acción</v-card-title>
+        <v-card-text>
+          ¿Seguro que quieres
+          <strong>{{ pendingIsOpen ? 'abrir' : 'cerrar' }}</strong>
+          el servicio?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="onConfirmCancel">Cancelar</v-btn>
+          <v-btn color="primary" variant="flat" @click="onConfirmOk">Confirmar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, onBeforeUnmount } from 'vue'
+import { onMounted, computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useStaffTicketsStore } from '@/stores/staffTickets'
+import { useServiceStateStore } from '@/stores/serviceStore'
 import { initStaffTicketsSignalR } from '@/stores/staffTickets'
 import TicketCard from '@/components/staff/TicketCard.vue'
 
-const store = useStaffTicketsStore()
-const loading = computed(() => store.loading)
-const error = computed(() => store.error)
-const tickets = computed(() => store.items)
+const ticketsStore = useStaffTicketsStore()
+const serviceStore = useServiceStateStore()
+
+const loading = computed(() => ticketsStore.loading)
+const error = computed(() => ticketsStore.error)
+const tickets = computed(() => ticketsStore.items)
+
+const pendingIsOpen = ref<boolean>(false)
+const previousIsOpen = ref<boolean>(false)
+const confirmDialog = ref(false)
+const confirmed = ref(false)
+
 let unsubscribe: null | (() => void) = null
 
 onMounted(async () => {
-  if (!store.items.length) store.fetchAll()
+  if (!ticketsStore.items.length) ticketsStore.fetchAll()
+  await serviceStore.fetch()
+  pendingIsOpen.value = serviceStore.isOpen ?? false
   unsubscribe = await initStaffTicketsSignalR()
 })
-onBeforeUnmount(() => { if (unsubscribe) unsubscribe() })
 
-function onServe(id: number) { store.actServe(id) }
-function onCancel(id: number) { store.actCancel(id) }
-function onNotify(id: number) { store.actNotify(id, true) }
+onBeforeUnmount(() => {
+  if (unsubscribe) unsubscribe()
+})
+
+function onToggleAttempt() {
+  if (serviceStore.isOpen === null) return
+  previousIsOpen.value = serviceStore.isOpen
+  confirmDialog.value = true
+}
+
+/**
+ * 🔒 Si el diálogo se cierra SIN confirmar
+ * (cancelar, click fuera, ESC)
+ * revertimos el switch
+ */
+watch(confirmDialog, (open) => {
+  if (open) {
+    confirmed.value = false
+    return
+  }
+
+  if (!confirmed.value && serviceStore.isOpen !== null) {
+    pendingIsOpen.value = serviceStore.isOpen
+  }
+})
+
+async function onConfirmOk() {
+  confirmed.value = true
+  try {
+    await serviceStore.setOpen(pendingIsOpen.value)
+  } finally {
+    confirmDialog.value = false
+    if (serviceStore.isOpen !== null) {
+      pendingIsOpen.value = serviceStore.isOpen
+    }
+  }
+}
+
+function onConfirmCancel() {
+  confirmDialog.value = false
+}
+
+function onServe(id: number) {
+  ticketsStore.actServe(id)
+}
+
+function onCancel(id: number) {
+  ticketsStore.actCancel(id)
+}
+
+function onNotify(id: number) {
+  ticketsStore.actNotify(id, true)
+}
+
 </script>
