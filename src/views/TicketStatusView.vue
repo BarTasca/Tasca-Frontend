@@ -30,11 +30,6 @@
               <div><strong>Estado:</strong> {{ status.status }}</div>
               <div><strong>Por delante:</strong> {{ status.ahead }}</div>
               <div><strong>Personas en tu grupo:</strong> {{ status.peopleCount }}</div>
-
-              <div v-if="status.notifiedAt">
-                <strong>Avisado:</strong>
-                <time :datetime="status.notifiedAt">{{ format(status.notifiedAt) }}</time>
-              </div>
             </div>
           </v-card-text>
         </v-card>

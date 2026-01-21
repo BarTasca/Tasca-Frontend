@@ -1,6 +1,7 @@
 import { apiFetch } from '../lib/http';
 import { STORAGE_KEYS } from '../config';
 import type { CreateTicketDto, TicketDetailDto, TicketStatusDto } from '../types/tickets';
+import type { serviceStateDto } from '@/types/serviceState'
 
 export async function createTicket(data: CreateTicketDto): Promise<TicketDetailDto> {
   return apiFetch<TicketDetailDto>('/api/Tickets', { method: 'POST', json: data });
@@ -25,9 +26,6 @@ export async function getTicketStatus(publicId: string): Promise<TicketStatusDto
   });
 }
 
-
-export interface TicketTokenResponse { token: string }
-
 export function readJwtPayload(token: string | null): any | null {
   if (!token) return null;
   const parts = token.split('.');
@@ -40,14 +38,18 @@ export function readJwtPayload(token: string | null): any | null {
   }
 }
 
-// 🔹 garantiza que el token de ticket es para ESTE publicId
+// garantiza que el token de ticket es para ESTE publicId
 export async function ensureTicketTokenFor(publicId: string): Promise<void> {
   const token = localStorage.getItem(STORAGE_KEYS.ticketToken);
   const payload = readJwtPayload(token);
   const claim = payload?.ticket_public_id ?? payload?.['ticket_public_id'];
 
   if (!token || !claim || claim !== publicId) {
-    const res = await apiFetch<TicketTokenResponse>(`/api/tickets/${publicId}/token`, { method: 'POST' });
+    const res = await apiFetch<TicketTokenResponse>(`/api/Tickets/${publicId}/token`, { method: 'POST' });
     localStorage.setItem(STORAGE_KEYS.ticketToken, res.token);
   }
+}
+
+export async function getServiceState(): Promise<serviceStateDto> {
+  return apiFetch<serviceStateDto>('/api/ServiceState', { method: 'GET' })
 }

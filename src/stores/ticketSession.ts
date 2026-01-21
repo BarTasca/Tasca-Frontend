@@ -4,15 +4,20 @@ import {
   createTicketToken,
   persistTicketToken,
   getTicketStatus,
+  getServiceState,
 } from '@/services/tickets'
 import type { CreateTicketDto, TicketStatusDto } from '@/types/tickets'
 import { ensureAuth, registerTicketEventHandlers, joinTicketGroup } from '@/services/signalR'
 import { ensureTicketTokenFor } from '@/services/tickets'
+import { ApiError } from '@/lib/http'
 
 interface State {
   loading: boolean
   error: string | null
   status: TicketStatusDto | null
+
+  isServiceOpen: boolean | null
+  serviceClosed: boolean
 }
 
 export const useTicketSessionStore = defineStore('ticketSession', {
@@ -20,11 +25,35 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     loading: false,
     error: null,
     status: null,
+
+    isServiceOpen: null,
+    serviceClosed: false,
   }),
   actions: {
-    async createAndInit(payload: CreateTicketDto): Promise<{ publicId: string }> {
+    async loadServiceState(): Promise<void> {
+      try {
+        const state = await getServiceState()
+        this.isServiceOpen = state.isOpen
+        this.serviceClosed = !state.isOpen
+      } catch (e: any) {
+        this.isServiceOpen = false
+        this.serviceClosed = true
+        this.error = 'No se pudo comprobar el estado del servicio'
+      }
+    },
+
+    async createAndInit(payload: CreateTicketDto): Promise<{ publicId: string } | null> {
       this.loading = true
       this.error = null
+
+      await this.loadServiceState()
+      if (this.isServiceOpen === false) {
+        this.serviceClosed = true
+        this.error = 'El servicio está cerrado'
+        this.loading = false
+        return null
+      }
+
       try {
         const created = await createTicket(payload)
         const publicId = created.publicId
@@ -34,6 +63,16 @@ export const useTicketSessionStore = defineStore('ticketSession', {
 
         return { publicId }
       } catch (e: any) {
+        if (e instanceof ApiError) {
+          const code = (e.body as any)?.code
+          if (e.status === 409 && code === 'SERVICE_CLOSED') {
+            this.isServiceOpen = false
+            this.serviceClosed = true
+            this.error = 'El servicio está cerrado'
+            return null
+          }
+        }
+
         this.error = e?.message ?? 'No se pudo crear el ticket'
         throw e
       } finally {
@@ -57,6 +96,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     clear(): void {
       this.status = null
       this.error = null
+      this.serviceClosed = false
     },
   },
 })
@@ -65,7 +105,6 @@ export async function initTicketSessionSignalR(
   publicId: string,
   store = useTicketSessionStore(),
 ): Promise<() => void> {
-  
   await ensureTicketTokenFor(publicId)
   await ensureAuth('ticket')
   await joinTicketGroup(publicId)
