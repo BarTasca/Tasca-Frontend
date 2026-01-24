@@ -5,6 +5,7 @@ import {
   persistTicketToken,
   getTicketStatus,
   getServiceState,
+  cancelTicketByClient,
 } from '@/services/tickets'
 import type { CreateTicketDto, TicketStatusDto } from '@/types/tickets'
 import { ensureAuth, registerTicketEventHandlers, joinTicketGroup } from '@/services/signalR'
@@ -74,6 +75,19 @@ export const useTicketSessionStore = defineStore('ticketSession', {
         }
 
         this.error = e?.message ?? 'No se pudo crear el ticket'
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+    async cancelByClient(publicId: string): Promise<void> {
+      this.loading = true
+      this.error = null
+      try {
+        await cancelTicketByClient(publicId)
+        await this.fetchStatus(publicId)
+      } catch (e: any) {
+        this.error = e?.message ?? 'No se pudo cancelar el turno'
         throw e
       } finally {
         this.loading = false

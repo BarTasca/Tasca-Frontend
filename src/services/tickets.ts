@@ -53,3 +53,11 @@ export async function ensureTicketTokenFor(publicId: string): Promise<void> {
 export async function getServiceState(): Promise<serviceStateDto> {
   return apiFetch<serviceStateDto>('/api/ServiceState', { method: 'GET' })
 }
+
+export async function cancelTicketByClient(publicId: string): Promise<TicketDetailDto> {
+  return apiFetch<TicketDetailDto>(`/api/Tickets/${publicId}/cancel`, {
+    method: 'POST',
+    auth: 'ticket',
+  })
+}
+
