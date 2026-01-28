@@ -7,7 +7,7 @@ import {
   notifyTicket,
 } from '@/services/staff';
 import type { TicketStaffListDto } from '@/types/staff';
-import { ensureAuth, registerTicketEventHandlers, joinStaffGroup } from '@/services/signalR';
+import { ensureAuth, registerTicketEventHandlers, joinStaffGroup, registerStaffEventHandlers } from '@/services/signalR';
 
 interface State {
   items: TicketStaffListDto[];
@@ -57,14 +57,24 @@ export const useStaffTicketsStore = defineStore('staffTickets', {
 });
 
 
+let refreshTimer: number | null = null;
+function scheduleRefresh(store: ReturnType<typeof useStaffTicketsStore>) {
+  if (refreshTimer) window.clearTimeout(refreshTimer);
+  refreshTimer = window.setTimeout(() => {
+    store.fetchAll().catch(() => {});
+  }, 150);
+}
 
 export async function initStaffTicketsSignalR(store = useStaffTicketsStore()): Promise<() => void> {
   await ensureAuth('staff');
   await joinStaffGroup();
 
-  const unsubscribe = registerTicketEventHandlers(async (payload: any) => {
-    console.log('[SignalR staff] event =>', payload);
+  const unsubscribe = registerStaffEventHandlers(async (payload: any, eventName: string) => {
+    console.log('[SignalR staff] ${eventName} event =>', payload);
+    scheduleRefresh(store);
     try { await store.fetchAll(); } catch {}
   });
   return unsubscribe;
 }
+
+
