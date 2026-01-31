@@ -6,12 +6,7 @@
         <div class="text-caption text-medium-emphasis">Gestión de la cola en tiempo real</div>
       </div>
 
-      <v-switch
-        v-model="pendingIsOpen"
-        color="primary"
-        inset
-        @click="onToggleAttempt"
-      />
+      <v-switch v-model="pendingIsOpen" color="primary" inset @click="onToggleAttempt" />
     </v-sheet>
 
     <v-alert v-if="serviceStore.error" type="error" variant="tonal" class="mb-3">
@@ -30,6 +25,7 @@
         :key="t.id"
         :ticket="t"
         :current-position="i + 1"
+        :busy="ticketsStore.isBusy(t.id)"
         @serve="onServe"
         @cancel="onCancel"
         @notify="onNotify"
@@ -135,5 +131,4 @@ function onCancel(id: number) {
 function onNotify(id: number) {
   ticketsStore.actNotify(id, true)
 }
-
 </script>
