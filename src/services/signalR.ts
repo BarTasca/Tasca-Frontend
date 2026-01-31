@@ -112,6 +112,23 @@ export function registerTicketEventHandlers(handler: (payload: any) => void): ()
   };
 }
 
+export function registerStaffEventHandlers(handler: (payload: any, eventName: string) => void): () => void {
+  const bound: Array<{ name: string; fn: (payload: any) => void }> = [];
+
+  const events = ['ticketCreated', 'ticketUpdated'];
+
+  for (const ev of events) {
+    const fn = (payload: any) => handler(payload, ev);
+    on(ev, fn);
+    bound.push({ name: ev, fn });
+  }
+
+  return () => {
+    for (const { name, fn } of bound) off(name, fn);
+  };
+}
+
+
 // ---- grupos del Hub ----
 
 export async function joinStaffGroup(): Promise<void> {
@@ -153,3 +170,4 @@ export async function joinTicketGroup(publicId: string): Promise<void> {
   console.error('[SignalR] joinTicketGroup failed after retries', { publicId, err: lastErr });
   throw lastErr ?? new Error('JoinTicketGroup failed');
 }
+
