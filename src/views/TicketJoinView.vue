@@ -40,6 +40,17 @@
             {{ error }}
           </v-alert>
 
+          <v-alert
+            v-if="store.isServiceOpen === true && store.queueAhead"
+            type="info"
+            variant="tonal"
+            density="comfortable"
+            class="mb-4"
+          >
+            <template v-if="store.queueAhead.ahead === 0"> Eres el siguiente </template>
+            <template v-else> Tienes {{ store.queueAhead.ahead }} por delante </template>
+          </v-alert>
+
           <!-- <div class="text-caption mb-2">
             isServiceOpen: {{ store.isServiceOpen }} | serviceClosed: {{ store.serviceClosed }}
           </div> -->
@@ -109,10 +120,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import { useTicketSessionStore } from '@/stores/ticketSession'
 import { useRouter } from 'vue-router'
 import AppCard from '@/components/common/AppCard.vue'
+import { getQueueAhead } from '@/services/tickets'
 
 const FullName = ref('')
 const PhonePrefix = ref('+34')
@@ -122,6 +134,8 @@ const PeopleCount = ref<number>(2)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+let cleanupPublicSignalR: (() => Promise<void>) | null = null
+
 const phonePrefixes = ['+34', '+33', '+351', '+49', '+44', '+39', '+41', '+43']
 
 const store = useTicketSessionStore()
@@ -129,7 +143,19 @@ const router = useRouter()
 
 onMounted(async () => {
   await store.loadServiceState()
+  if (store.isServiceOpen === true) {
+    await store.loadQueueAhead()
+    cleanupPublicSignalR = await store.initPublicQueueSignalR()
+  }
 })
+
+onUnmounted(async () => {
+  if (cleanupPublicSignalR) {
+    await cleanupPublicSignalR()
+    cleanupPublicSignalR = null
+  }
+})
+
 
 async function onSubmit() {
   loading.value = true
