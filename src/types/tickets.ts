@@ -2,6 +2,7 @@ export interface CreateTicketDto {
   fullName: string
   phone: string
   peopleCount: number
+  qrToken: string
 }
 
 export interface TicketDetailDto {

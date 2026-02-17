@@ -2,6 +2,7 @@ import { apiFetch } from '../lib/http';
 import { STORAGE_KEYS } from '../config';
 import type { CreateTicketDto, TicketDetailDto, TicketStatusDto } from '../types/tickets';
 import type { serviceStateDto } from '@/types/serviceState'
+import type { QueueAheadDto } from '@/types/queue'
 
 export async function createTicket(data: CreateTicketDto): Promise<TicketDetailDto> {
   return apiFetch<TicketDetailDto>('/api/Tickets', { method: 'POST', json: data });
@@ -59,5 +60,9 @@ export async function cancelTicketByClient(publicId: string): Promise<TicketDeta
     method: 'POST',
     auth: 'ticket',
   })
+}
+
+export async function getQueueAhead(): Promise<QueueAheadDto> {
+  return apiFetch<QueueAheadDto>('/api/Tickets/ahead', { method: 'GET' })
 }
 

@@ -11,6 +11,14 @@ import type { CreateTicketDto, TicketStatusDto } from '@/types/tickets'
 import { ensureAuth, registerTicketEventHandlers, joinTicketGroup } from '@/services/signalR'
 import { ensureTicketTokenFor } from '@/services/tickets'
 import { ApiError } from '@/lib/http'
+import { getQueueAhead } from '@/services/tickets'
+import type { QueueAheadDto } from '@/types/queue'
+import {
+  ensurePublicConnected,
+  onAheadUpdated,
+  offAheadUpdated,
+  stopPublicSignalR,
+} from '@/services/publicQueueSignalR'
 
 interface State {
   loading: boolean
@@ -19,6 +27,8 @@ interface State {
 
   isServiceOpen: boolean | null
   serviceClosed: boolean
+
+  queueAhead: QueueAheadDto | null
 }
 
 export const useTicketSessionStore = defineStore('ticketSession', {
@@ -29,6 +39,8 @@ export const useTicketSessionStore = defineStore('ticketSession', {
 
     isServiceOpen: null,
     serviceClosed: false,
+
+    queueAhead: null,
   }),
   actions: {
     async loadServiceState(): Promise<void> {
@@ -66,10 +78,16 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       } catch (e: any) {
         if (e instanceof ApiError) {
           const code = (e.body as any)?.code
+
           if (e.status === 409 && code === 'SERVICE_CLOSED') {
             this.isServiceOpen = false
             this.serviceClosed = true
             this.error = 'El servicio está cerrado'
+            return null
+          }
+
+          if (e.status === 410 && (code === 'QR_EXPIRED' || code === 'QR_TOKEN_REQUIRED')) {
+            this.error = 'El QR ha caducado. Vuelve a escanear el QR de la pantalla.'
             return null
           }
         }
@@ -111,6 +129,30 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       this.status = null
       this.error = null
       this.serviceClosed = false
+      this.queueAhead = null
+    },
+
+    async loadQueueAhead(): Promise<void> {
+      try {
+        this.queueAhead = await getQueueAhead()
+      } catch {
+        this.queueAhead = null
+      }
+    },
+
+    async initPublicQueueSignalR(): Promise<() => Promise<void>> {
+      await ensurePublicConnected()
+
+      const handler = (dto: QueueAheadDto) => {
+        this.queueAhead = dto
+      }
+
+      onAheadUpdated(handler)
+
+      return async () => {
+        offAheadUpdated(handler)
+        await stopPublicSignalR()
+      }
     },
   },
 })
