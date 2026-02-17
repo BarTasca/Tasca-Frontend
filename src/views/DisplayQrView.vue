@@ -35,7 +35,7 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import QRCode from 'qrcode'
-import AppCard from '@/components/common/AppCard.vue'
+import AppCard from '@/components/ui/AppCard.vue'
 import { getCurrentQrToken } from '@/services/qr'
 
 const router = useRouter()

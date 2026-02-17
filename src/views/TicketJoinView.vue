@@ -138,7 +138,7 @@ import { onMounted, ref, onUnmounted } from 'vue'
 import { useTicketSessionStore } from '@/stores/ticketSession'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
-import AppCard from '@/components/common/AppCard.vue'
+import AppCard from '@/components/ui/AppCard.vue'
 import { getQueueAhead } from '@/services/tickets'
 
 const FullName = ref('')
