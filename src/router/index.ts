@@ -11,8 +11,8 @@ import LoginView from '@/views/LoginView.vue'
 import StaffHomeView from '@/views/staff/StaffHomeView.vue'
 import { useAuthStore } from '@/stores/auth'
 import TicketStatusView from '@/views/TicketStatusView.vue'
-import TicketJoinView from '@/views/TicketJoinView.vue';
-
+import TicketJoinView from '@/views/TicketJoinView.vue'
+import DisplayQrView from '@/views/DisplayQrView.vue'
 
 const routes = [
   {
@@ -21,6 +21,7 @@ const routes = [
     children: [
       // { path: '', name: 'home', component: HomeView },
       { path: '', name: 'ticket.join', component: TicketJoinView, alias: ['/join'] },
+      { path: 'display', name: 'qr.display', component: DisplayQrView },
       { path: 'login', name: 'login', component: LoginView },
       {
         path: 'staff',

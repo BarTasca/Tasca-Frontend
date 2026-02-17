@@ -78,10 +78,16 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       } catch (e: any) {
         if (e instanceof ApiError) {
           const code = (e.body as any)?.code
+
           if (e.status === 409 && code === 'SERVICE_CLOSED') {
             this.isServiceOpen = false
             this.serviceClosed = true
             this.error = 'El servicio está cerrado'
+            return null
+          }
+
+          if (e.status === 410 && (code === 'QR_EXPIRED' || code === 'QR_TOKEN_REQUIRED')) {
+            this.error = 'El QR ha caducado. Vuelve a escanear el QR de la pantalla.'
             return null
           }
         }
@@ -134,7 +140,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       }
     },
 
-async initPublicQueueSignalR(): Promise<() => Promise<void>> {
+    async initPublicQueueSignalR(): Promise<() => Promise<void>> {
       await ensurePublicConnected()
 
       const handler = (dto: QueueAheadDto) => {
