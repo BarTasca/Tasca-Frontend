@@ -1,9 +1,9 @@
 export const themeConfig = {
   colors: {
-    primary: '#8B5E3C',
+    primary: '#e26d13',
     secondary: '#6C8A4B',
     accent: '#C97B4D',
-    background: '#F4E9D8',
+    background: '#ffffff',
     hover: '#b35715',
     onPrimary: '#ffffff',
   },

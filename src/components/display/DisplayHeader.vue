@@ -1,33 +1,15 @@
 <template>
-  <div class="display-header">
-    <div class="display-title">{{ title }}</div>
-    <div v-if="subtitle" class="display-subtitle">{{ subtitle }}</div>
-  </div>
+  <img class="display-logo" :src="logoUrl" alt="Bar La Tasca" />
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  title: string
-  subtitle?: string
-}>()
+import logoUrl from '@/assets/logo.png'
 </script>
 
 <style scoped>
-.display-header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.display-title {
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1.15;
-}
-
-.display-subtitle {
-  font-size: 14px;
-  opacity: 0.9;
+.display-logo {
+  width: clamp(96px, 12vw, 150px);
+  height: auto;
+  display: block;
 }
 </style>

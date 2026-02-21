@@ -1,5 +1,9 @@
 <template>
   <DisplayLayout>
+    <template #header>
+      <DisplayHeader />
+    </template>
+
     <AppCard
       :maxWidth="640"
       title="Escanea para unirte a la cola"
@@ -20,6 +24,14 @@
     </AppCard>
   </DisplayLayout>
 </template>
+
+<style>
+AppCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref } from 'vue'

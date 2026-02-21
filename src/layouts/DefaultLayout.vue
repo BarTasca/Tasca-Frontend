@@ -27,6 +27,7 @@ import { useRoute } from 'vue-router'
   padding: 16px;
   display: flex;
   justify-content: center;
+  background-color: red;
 }
 
 .header-content {

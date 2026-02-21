@@ -74,7 +74,7 @@ const phonePrefix = ref('+34')
 const phone = ref('')
 const peopleCount = ref<number>(2)
 
-const phonePrefixes = ['+34', '+33', '+351', '+49', '+44', '+39', '+41', '+43']
+const phonePrefixes = ['+34', '+33', '+351', '+49', '+44', '+39', '+41', '+43', '+376']
 
 function emitSubmit() {
   emit('submit', {

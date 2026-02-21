@@ -23,6 +23,7 @@ defineProps<{
   padding: var(--space-md);
   display: flex;
   justify-content: center;
+  background-color: red;
 }
 
 .app-header__inner {
@@ -31,6 +32,7 @@ defineProps<{
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  background-color: red;
 }
 
 .app-header__logo {
