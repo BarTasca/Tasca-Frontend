@@ -6,12 +6,12 @@ import {
   getTicketStatus,
   getServiceState,
   cancelTicketByClient,
+  ensureTicketTokenFor,
+  getQueueAhead,
 } from '@/services/tickets'
 import type { CreateTicketDto, TicketStatusDto } from '@/types/tickets'
 import { ensureAuth, registerTicketEventHandlers, joinTicketGroup } from '@/services/signalR'
-import { ensureTicketTokenFor } from '@/services/tickets'
 import { ApiError } from '@/lib/http'
-import { getQueueAhead } from '@/services/tickets'
 import type { QueueAheadDto } from '@/types/queue'
 import {
   ensurePublicConnected,
@@ -19,6 +19,20 @@ import {
   offAheadUpdated,
   stopPublicSignalR,
 } from '@/services/publicQueueSignalR'
+import { STORAGE_KEYS } from '@/config'
+import {
+  getVapidPublicKey,
+  registerTicketPushSubscription,
+  unregisterTicketPushSubscription,
+} from '@/services/push'
+import {
+  getExistingBrowserPushSubscription,
+  getNotificationPermission,
+  isPushSupported,
+  requestNotificationPermission,
+  subscribeBrowserPush,
+  unsubscribeBrowserPush,
+} from '@/services/pushClient'
 
 interface State {
   loading: boolean
@@ -29,6 +43,12 @@ interface State {
   serviceClosed: boolean
 
   queueAhead: QueueAheadDto | null
+
+  pushSupported: boolean
+  pushPermission: NotificationPermission | 'unsupported'
+  pushEnabled: boolean
+  pushLoading: boolean
+  pushError: string | null
 }
 
 export const useTicketSessionStore = defineStore('ticketSession', {
@@ -41,6 +61,12 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     serviceClosed: false,
 
     queueAhead: null,
+
+    pushSupported: false,
+    pushPermission: 'default',
+    pushEnabled: false,
+    pushLoading: false,
+    pushError: null,
   }),
   actions: {
     async loadServiceState(): Promise<void> {
@@ -130,6 +156,12 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       this.error = null
       this.serviceClosed = false
       this.queueAhead = null
+
+      this.pushSupported = false
+      this.pushPermission = 'default'
+      this.pushEnabled = false
+      this.pushLoading = false
+      this.pushError = null
     },
 
     async loadQueueAhead(): Promise<void> {
@@ -152,6 +184,133 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       return async () => {
         offAheadUpdated(handler)
         await stopPublicSignalR()
+      }
+    },
+
+    refreshPushState(): void {
+      const supported = isPushSupported()
+      this.pushSupported = supported
+      this.pushPermission = supported ? getNotificationPermission() : 'unsupported'
+    },
+
+    async syncExistingPushSubscription(): Promise<void> {
+      this.refreshPushState()
+
+      if (!this.pushSupported) {
+        this.pushEnabled = false
+        return
+      }
+
+      try {
+        const existing = await getExistingBrowserPushSubscription()
+        this.pushEnabled = !!existing
+      } catch {
+        this.pushEnabled = false
+      }
+    },
+
+    async enablePushForTicket(publicId: string): Promise<boolean> {
+      this.pushLoading = true
+      this.pushError = null
+
+      try {
+        this.refreshPushState()
+
+        if (!this.pushSupported) {
+          this.pushError = 'Este navegador no soporta notificaciones push'
+          return false
+        }
+
+        const permission =
+          this.pushPermission === 'granted' ? 'granted' : await requestNotificationPermission()
+
+        this.pushPermission = permission
+
+        if (permission !== 'granted') {
+          this.pushEnabled = false
+          this.pushError = 'No has concedido permiso para notificaciones'
+          return false
+        }
+
+        await ensureTicketTokenFor(publicId)
+
+        const ticketToken = localStorage.getItem(STORAGE_KEYS.ticketToken)
+        if (!ticketToken) {
+          this.pushError = 'No se pudo obtener el token del ticket'
+          return false
+        }
+
+        const { publicKey } = await getVapidPublicKey()
+        const browserSub = await subscribeBrowserPush(publicKey)
+
+        const json = browserSub.toJSON()
+        const p256dh = json.keys?.p256dh
+        const auth = json.keys?.auth
+        const endpoint = json.endpoint
+
+        if (!endpoint || !p256dh || !auth) {
+          this.pushError = 'La suscripción del navegador no es válida'
+          return false
+        }
+
+        await registerTicketPushSubscription(publicId, {
+          ticketToken,
+          subscription: {
+            endpoint,
+            keys: {
+              p256dh,
+              auth,
+            },
+          },
+        })
+
+        this.pushEnabled = true
+        return true
+      } catch (e: any) {
+        console.error('[push] enablePushForTicket failed', e)
+        this.pushEnabled = false
+        this.pushError = e?.message ?? 'No se pudieron activar las notificaciones'
+        return false
+      } finally {
+        this.pushLoading = false
+      }
+    },
+
+    async disablePushForTicket(publicId: string): Promise<boolean> {
+      this.pushLoading = true
+      this.pushError = null
+
+      try {
+        this.refreshPushState()
+
+        const existing = await getExistingBrowserPushSubscription()
+        if (!existing) {
+          this.pushEnabled = false
+          return true
+        }
+
+        await ensureTicketTokenFor(publicId)
+
+        const ticketToken = localStorage.getItem(STORAGE_KEYS.ticketToken)
+        if (!ticketToken) {
+          this.pushError = 'No se pudo obtener el token del ticket'
+          return false
+        }
+
+        await unregisterTicketPushSubscription(publicId, {
+          ticketToken,
+          endpoint: existing.endpoint,
+        })
+
+        await unsubscribeBrowserPush()
+
+        this.pushEnabled = false
+        return true
+      } catch (e: any) {
+        this.pushError = e?.message ?? 'No se pudieron desactivar las notificaciones'
+        return false
+      } finally {
+        this.pushLoading = false
       }
     },
   },

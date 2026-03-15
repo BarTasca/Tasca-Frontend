@@ -16,7 +16,14 @@
             :status="status"
             :canCancel="canCancel"
             :loading="loading"
+            :pushSupported="store.pushSupported"
+            :pushPermission="store.pushPermission"
+            :pushEnabled="store.pushEnabled"
+            :pushLoading="store.pushLoading"
+            :pushError="store.pushError"
             @cancel="confirmDialog = true"
+            @enable-push="onEnablePush"
+            @disable-push="onDisablePush"
           />
         </AppCard>
       </v-col>
@@ -59,7 +66,9 @@ const canCancel = computed(() => {
 
 onMounted(async () => {
   await load()
+
   if (publicId.value) {
+    await store.syncExistingPushSubscription()
     unsubscribe = await initTicketSessionSignalR(publicId.value)
   }
 })
@@ -79,6 +88,16 @@ async function onCancelConfirm() {
     await store.cancelByClient(publicId.value)
     confirmDialog.value = false
   } catch {}
+}
+
+async function onEnablePush() {
+  if (!publicId.value) return
+  await store.enablePushForTicket(publicId.value)
+}
+
+async function onDisablePush() {
+  if (!publicId.value) return
+  await store.disablePushForTicket(publicId.value)
 }
 
 watch(publicId, load)
