@@ -1,0 +1,16 @@
+@use './tokens.scss' as *;
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-lg;
+}

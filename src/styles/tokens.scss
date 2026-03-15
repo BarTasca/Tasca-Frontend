@@ -1,0 +1,50 @@
+// ===== COLORS =====
+$color-background: #f1f1f1;
+$color-wood: #8B5E3C;
+$color-success: #6C8A4B;
+$color-accent: #C97B4D;
+
+// ===== TYPOGRAPHY =====
+$font-family-base: 'Inter', system-ui, sans-serif;
+$font-size-base: 16px;
+
+// ===== SPACING =====
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+
+// ===== BORDER RADIUS =====
+$radius-sm: 6px;
+$radius-md: 12px;
+$radius-lg: 18px;
+
+// ===== SHADOWS =====
+$shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+/* ===== CSS TOKENS (source of truth for UI components) ===== */
+:root {
+  --color-background: #{$color-background};
+
+  --color-primary: #{$color-wood};
+  --color-primary-contrast: #ffffff;
+
+  --color-secondary: #{$color-success};
+  --color-accent: #{$color-accent};
+
+  --font-family-base: #{$font-family-base};
+  --font-size-base: #{$font-size-base};
+
+  --space-xs: #{$space-xs};
+  --space-sm: #{$space-sm};
+  --space-md: #{$space-md};
+  --space-lg: #{$space-lg};
+  --space-xl: #{$space-xl};
+
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+
+  --shadow-soft: #{$shadow-soft};
+}

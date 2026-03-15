@@ -1,48 +1,53 @@
 <template>
-  <v-container class="py-8">
-    <v-row justify="center">
-      <v-col cols="12" sm="10" md="6" lg="5">
-        <AppCard
-          title="Escanea para unirte a la cola"
-          subtitle="El QR se renueva automáticamente."
-          :maxWidth="640"
-        >
-          <div class="d-flex flex-column align-center ga-4">
-            <v-progress-circular v-if="loading" indeterminate />
+  <DisplayLayout>
+    <template #header>
+      <DisplayHeader />
+    </template>
 
-            <v-alert v-if="error" type="error" variant="tonal" density="comfortable" class="w-100">
-              {{ error }}
-            </v-alert>
+    <AppCard
+      :maxWidth="640"
+      title="Escanea para unirte a la cola"
+      subtitle="El QR se renueva automáticamente."
+    >
+      <DisplayQrBlock
+        :loading="loading"
+        :error="error"
+        :qrDataUrl="qrDataUrl"
+        :expiresInSec="expiresInSec"
+      />
 
-            <img
-              v-if="qrDataUrl && !loading"
-              :src="qrDataUrl"
-              alt="QR para unirse"
-              style="width: 320px; max-width: 100%; border-radius: 12px;"
-            />
-
-            <div v-if="expiresInSec !== null" class="text-caption">
-              Renueva en ~{{ expiresInSec }}s
-            </div>
-          </div>
-        </AppCard>
-      </v-col>
-    </v-row>
-  </v-container>
+      <template #actions>
+        <DisplayFooter>
+          <span class="text-caption">Mantén esta pantalla visible en la vitrina.</span>
+        </DisplayFooter>
+      </template>
+    </AppCard>
+  </DisplayLayout>
 </template>
+
+<style>
+AppCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
 
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import QRCode from 'qrcode'
-import AppCard from '@/components/common/AppCard.vue'
+import AppCard from '@/components/ui/AppCard.vue'
+import DisplayLayout from '@/components/display/DisplayLayout.vue'
+import DisplayHeader from '@/components/display/DisplayHeader.vue'
+import DisplayQrBlock from '@/components/display/DisplayQrBlock.vue'
+import DisplayFooter from '@/components/display/DisplayFooter.vue'
 import { getCurrentQrToken } from '@/services/qr'
 
 const router = useRouter()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
-
 const qrDataUrl = ref<string | null>(null)
 const expiresInSec = ref<number | null>(null)
 
@@ -77,27 +82,20 @@ async function loadAndSchedule() {
     const { token, expiresAtUtc } = await getCurrentQrToken()
 
     const joinUrl = buildJoinUrl(token)
-    qrDataUrl.value = await QRCode.toDataURL(joinUrl, {
-      margin: 1,
-      width: 420,
-    })
+    qrDataUrl.value = await QRCode.toDataURL(joinUrl, { margin: 1, width: 420 })
 
     const expiresMs = Date.parse(expiresAtUtc)
     const nowMs = Date.now()
     const msLeft = Math.max(0, expiresMs - nowMs)
 
-    // countdown visual (opcional, pero útil en vitrina)
     expiresInSec.value = Math.ceil(msLeft / 1000)
     countdownTimer = window.setInterval(() => {
       if (expiresInSec.value === null) return
       expiresInSec.value = Math.max(0, expiresInSec.value - 1)
     }, 1000)
 
-    // refresca un poco antes de expirar para evitar “casi caducado”
     const refreshIn = Math.max(1000, msLeft - 3000)
-    refreshTimer = window.setTimeout(() => {
-      loadAndSchedule()
-    }, refreshIn)
+    refreshTimer = window.setTimeout(() => loadAndSchedule(), refreshIn)
   } catch (e: any) {
     error.value = e?.message ?? 'No se pudo cargar el QR'
   } finally {
@@ -105,11 +103,6 @@ async function loadAndSchedule() {
   }
 }
 
-onMounted(() => {
-  loadAndSchedule()
-})
-
-onBeforeUnmount(() => {
-  clearTimers()
-})
+onMounted(() => loadAndSchedule())
+onBeforeUnmount(() => clearTimers())
 </script>

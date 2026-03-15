@@ -2,6 +2,7 @@ import {
   createRouter,
   createWebHistory,
   type RouteLocationNormalized,
+  type RouteRecordRaw,
   RouterView,
 } from 'vue-router'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -13,16 +14,17 @@ import { useAuthStore } from '@/stores/auth'
 import TicketStatusView from '@/views/TicketStatusView.vue'
 import TicketJoinView from '@/views/TicketJoinView.vue'
 import DisplayQrView from '@/views/DisplayQrView.vue'
+import BareLayout from '@/layouts/BareLayout.vue'
+import StyleGuideView from '@/views/StyleGuideView.vue'
+import { isDevPreviewEnabled } from '@/config/env'
+import DevHubView from '@/views/DevHubView.vue'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: DefaultLayout,
     children: [
-      // { path: '', name: 'home', component: HomeView },
       { path: '', name: 'ticket.join', component: TicketJoinView, alias: ['/join'] },
-      { path: 'display', name: 'qr.display', component: DisplayQrView },
-      { path: 'login', name: 'login', component: LoginView },
       {
         path: 'staff',
         component: RouterView,
@@ -31,11 +33,32 @@ const routes = [
       },
     ],
   },
-  // { path: '/join', name: 'ticket.join', component: TicketJoinView },
+  {
+    path: '/',
+    component: BareLayout,
+    children: [
+      { path: 'login', name: 'login', component: LoginView },
+      { path: 'display', name: 'qr.display', component: DisplayQrView },
+    ],
+  },
   { path: '/ticket/:publicId', name: 'ticket.status', component: TicketStatusView },
-
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
 ]
+
+if (isDevPreviewEnabled) {
+  routes.push(
+    {
+      path: '/style',
+      name: 'style.guide',
+      component: StyleGuideView,
+    },
+    {
+      path: '/dev',
+      name: 'dev.hub',
+      component: () => import('@/views/DevHubView.vue'),
+    },
+  )
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +74,12 @@ router.beforeEach((to: RouteLocationNormalized) => {
   return {
     name: 'login',
     query: { redirect: to.fullPath },
+  }
+})
+
+router.beforeEach((to) => {
+  if (to.name === 'dev.hub' && !isDevPreviewEnabled) {
+    return { name: 'not-found' }
   }
 })
 

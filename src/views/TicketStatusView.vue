@@ -2,78 +2,51 @@
   <v-container class="py-10">
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8" lg="6">
-        <v-card rounded="xl" elevation="3" max-width="640" class="mx-auto">
-          <v-card-item class="bg-primary text-primary-contrast">
-            <v-card-title>Estado del turno</v-card-title>
-            <v-card-subtitle>Seguimiento de tu posición en la cola.</v-card-subtitle>
-          </v-card-item>
+        <AppCard
+          title="Estado del turno"
+          subtitle="Seguimiento de tu posición en la cola."
+          :maxWidth="640"
+        >
+          <StatusError v-if="error" :error="error" class="mb-3" />
 
-          <v-divider />
+          <StatusLoading v-if="loading" />
 
-          <v-card-text>
-            <v-alert
-              v-if="error"
-              type="error"
-              variant="tonal"
-              density="comfortable"
-              class="mb-3"
-            >
-              {{ error }}
-            </v-alert>
-
-            <div v-if="loading" class="d-flex align-center ga-3">
-              <v-progress-circular indeterminate size="20" />
-              <span class="text-body-2">Cargando…</span>
-            </div>
-
-            <div v-if="status && !loading" class="d-flex flex-column ga-1">
-              <div><strong>Estado:</strong> {{ status.status }}</div>
-              <div><strong>Por delante:</strong> {{ status.ahead }}</div>
-              <div><strong>Personas en tu grupo:</strong> {{ status.peopleCount }}</div>
-
-              <v-divider class="my-4" />
-
-              <div class="d-flex flex-column ga-2">
-                <v-btn
-                  v-if="canCancel"
-                  color="error"
-                  variant="tonal"
-                  :disabled="loading"
-                  @click="confirmDialog = true"
-                  block
-                >
-                  Cancelar turno
-                </v-btn>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
+          <StatusSummary
+            v-if="status && !loading"
+            :status="status"
+            :canCancel="canCancel"
+            :loading="loading"
+            :pushSupported="store.pushSupported"
+            :pushPermission="store.pushPermission"
+            :pushEnabled="store.pushEnabled"
+            :pushLoading="store.pushLoading"
+            :pushError="store.pushError"
+            @cancel="confirmDialog = true"
+            @enable-push="onEnablePush"
+            @disable-push="onDisablePush"
+          />
+        </AppCard>
       </v-col>
     </v-row>
 
-    <v-dialog v-model="confirmDialog" max-width="420">
-      <v-card>
-        <v-card-title class="text-h6">Confirmar cancelación</v-card-title>
-        <v-card-text>
-          ¿Seguro que quieres cancelar tu turno? Si cancelas, perderás tu posición en la cola.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn variant="text" @click="confirmDialog = false" :disabled="loading">Volver</v-btn>
-          <v-btn color="error" @click="onCancelConfirm" :loading="loading">
-            Cancelar turno
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <ConfirmCancelDialog
+      v-model="confirmDialog"
+      :loading="loading"
+      @confirm="onCancelConfirm"
+    />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { onMounted, watch, computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTicketSessionStore } from '@/stores/ticketSession'
-import { initTicketSessionSignalR } from '@/stores/ticketSession'
+import { useTicketSessionStore, initTicketSessionSignalR } from '@/stores/ticketSession'
+
+import AppCard from '@/components/ui/AppCard.vue'
+import StatusError from '@/components/ticketStatus/StatusError.vue'
+import StatusLoading from '@/components/ticketStatus/StatusLoading.vue'
+import StatusSummary from '@/components/ticketStatus/StatusSummary.vue'
+import ConfirmCancelDialog from '@/components/ticketStatus/ConfirmCancelDialog.vue'
 
 const route = useRoute()
 const store = useTicketSessionStore()
@@ -93,7 +66,9 @@ const canCancel = computed(() => {
 
 onMounted(async () => {
   await load()
+
   if (publicId.value) {
+    await store.syncExistingPushSubscription()
     unsubscribe = await initTicketSessionSignalR(publicId.value)
   }
 })
@@ -113,6 +88,16 @@ async function onCancelConfirm() {
     await store.cancelByClient(publicId.value)
     confirmDialog.value = false
   } catch {}
+}
+
+async function onEnablePush() {
+  if (!publicId.value) return
+  await store.enablePushForTicket(publicId.value)
+}
+
+async function onDisablePush() {
+  if (!publicId.value) return
+  await store.disablePushForTicket(publicId.value)
 }
 
 watch(publicId, load)
