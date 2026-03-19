@@ -1,10 +1,10 @@
 export const themeConfig = {
   colors: {
-    primary: '#e26d13',
-    secondary: '#6C8A4B',
-    accent: '#C97B4D',
     background: '#ffffff',
-    hover: '#b35715',
-    onPrimary: '#ffffff',
+    wood: '#EEE3D8',
+    dark_Wood: '#7E6D61',
+    success: '#5B6E27',
+    cancel: '#6E2727',
+    accent: '#DE7D0B',
   },
 } as const
