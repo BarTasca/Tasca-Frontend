@@ -47,7 +47,6 @@ import TicketCard from '@/components/staff/TicketCard.vue'
 import StaffAlerts from '@/components/staff/StaffAlerts.vue'
 import ServiceConfirmDialog from '@/components/staff/ServiceConfirmDialog.vue'
 import ServiceState from '@/components/staff/ServiceState.vue'
-import AppCard from '@/components/ui/AppCard.vue'
 
 const ticketsStore = useStaffTicketsStore()
 const serviceStore = useServiceStateStore()
