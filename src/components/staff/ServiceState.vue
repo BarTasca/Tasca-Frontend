@@ -8,9 +8,6 @@ const emit = defineEmits<{
   (e: 'toggle-attempt', value: boolean): void
 }>()
 
-// function toggleAttempt(next-value: boolean){
-
-// }
 
 function onUpdate(value: boolean | null) {
   if (value == null) return
