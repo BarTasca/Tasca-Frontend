@@ -56,7 +56,7 @@ function onUpdate(value: boolean | null) {
 
 .status-box {
   position: absolute;
-  left: 50%;
+  left: 35%;
   transform: translateX(-50%);
 
   min-width: 200px;
