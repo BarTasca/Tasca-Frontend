@@ -2,9 +2,11 @@
 $color-background: #ffffff;
 $color-wood: #B79A7B;
 $color-dark-wood: #7E6D61;
+$color-ultra-dark-wood: #2A2521;
 $color-success: #5B6E27;
 $color-cancel: #6E2727;
 $color-accent: #DE7D0B;
+
 
 // ===== TYPOGRAPHY =====
 $font-family-base: 'Bitter', system-ui, sans-serif;
@@ -29,6 +31,7 @@ $shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
 :root {
   --color-background: #{$color-background};
   --color-dark-wood: #{$color-dark-wood};
+  --color-ultra-dark-wood: #{$color-ultra-dark-wood};
   --color-primary: #{$color-wood};
   --color-primary-contrast: #ffffff;
 

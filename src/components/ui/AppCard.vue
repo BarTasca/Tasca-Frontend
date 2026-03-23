@@ -1,6 +1,6 @@
 <template>
   <v-card rounded="xl" elevation="3" :max-width="maxWidth" class="mx-auto">
-    <div class="app-card__header bg-primary text-white">
+    <div class="app-card__header text-white">
       <div class="app-card__header-inner">
         <div class="app-card__header-row">
           <div class="app-card__header-text">
@@ -37,6 +37,7 @@ defineProps<{
 .app-card__header {
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
+  background-color: var(--color-background);
 }
 .app-card__header-inner {
   padding: 18px 20px;
@@ -59,10 +60,15 @@ defineProps<{
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.2;
+  color: var(--color-ultra-dark-wood);
+  text-align: center;
+  
 }
 .app-card__subtitle {
   margin-top: 6px;
   font-size: 0.95rem;
   opacity: 0.9;
+  color: var(--color-dark-wood);
+  text-align: center;
 }
 </style>
