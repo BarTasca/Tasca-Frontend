@@ -41,13 +41,14 @@
 
       <v-btn
         type="submit"
-        color="primary"
+        color="#5B6E27"
         :loading="loading"
         :disabled="loading"
+        style="border-radius: 19px; height: 60px;"
         size="large"
         block
       >
-        {{ loading ? 'Creando…' : 'Crear turno' }}
+        {{ loading ? 'Creando…' : 'Pedir mesa' }}
       </v-btn>
     </div>
   </v-form>

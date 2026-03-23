@@ -3,30 +3,25 @@
     <v-progress-circular indeterminate />
   </div>
 
-  <v-container v-else class="py-8">
-    <v-row justify="center">
-      <v-col cols="12" sm="10" md="6" lg="4">
+  <v-container v-else fluid class="pa-0 mt-6 d-flex flex-column flex-grow-1">
+    <TicketJoinHeader class="flex-grow-1">
+      <TicketJoinAlerts
+        :isServiceOpen="store.isServiceOpen"
+        :qrValidating="qrValidating"
+        :qrError="qrError"
+        :submitError="error"
+        :queueAhead="store.queueAhead"
+      />
 
-        <TicketJoinHeader>
-          <TicketJoinAlerts
-            :isServiceOpen="store.isServiceOpen"
-            :qrValidating="qrValidating"
-            :qrError="qrError"
-            :submitError="error"
-            :queueAhead="store.queueAhead"
-          />
-
-          <TicketJoinForm
-            v-if="store.isServiceOpen === true && qrValid"
-            :loading="loading"
-            @submit="handleSubmit"
-          />
-        </TicketJoinHeader>
-
-      </v-col>
-    </v-row>
+      <TicketJoinForm
+        v-if="store.isServiceOpen === true && qrValid"
+        :loading="loading"
+        @submit="handleSubmit"
+      />
+    </TicketJoinHeader>
   </v-container>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'

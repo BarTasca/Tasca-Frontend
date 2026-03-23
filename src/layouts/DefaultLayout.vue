@@ -47,10 +47,12 @@ import { useRoute } from 'vue-router'
 }
 
 .app-container {
+  display: flex;
+  flex-direction: column;
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  padding: 16px;
+  /* padding: 16px; */
   flex: 1;
 }
 </style>

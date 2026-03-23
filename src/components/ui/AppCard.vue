@@ -1,5 +1,10 @@
+
 <template>
-  <v-card rounded="xl" elevation="3" :max-width="maxWidth" class="mx-auto">
+  <v-card 
+    elevation="3" 
+    class="d-flex flex-column" 
+    style="height: 100%; width: 100%; border-radius: 19px 19px 0 0 !important; overflow: hidden;"
+  >
     <div class="app-card__header text-white">
       <div class="app-card__header-inner">
         <div class="app-card__header-row">
@@ -7,17 +12,11 @@
             <div class="app-card__title">{{ title }}</div>
             <div v-if="subtitle" class="app-card__subtitle">{{ subtitle }}</div>
           </div>
-
-          <div v-if="$slots.headerActions" class="app-card__header-actions">
-            <slot name="headerActions" />
-          </div>
         </div>
       </div>
     </div>
-
-    <v-divider />
-
-    <v-card-text>
+    
+    <v-card-text class="flex-grow-1 pb-10">
       <slot />
     </v-card-text>
 
@@ -35,8 +34,6 @@ defineProps<{
 
 <style scoped>
 .app-card__header {
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
   background-color: var(--color-background);
 }
 .app-card__header-inner {
@@ -45,16 +42,14 @@ defineProps<{
 .app-card__header-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
 }
 .app-card__header-text {
-  min-width: 0;
-}
-.app-card__header-actions {
-  flex: 0 0 auto;
   display: flex;
-  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 0;
 }
 .app-card__title {
   font-size: 1.25rem;
@@ -62,7 +57,6 @@ defineProps<{
   line-height: 1.2;
   color: var(--color-ultra-dark-wood);
   text-align: center;
-  
 }
 .app-card__subtitle {
   margin-top: 6px;
