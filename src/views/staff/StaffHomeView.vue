@@ -1,36 +1,32 @@
 <template>
   <v-container class="py-4">
-    <AppCard title="Panel de staff" subtitle="Gestión de la cola en tiempo real" :maxWidth="960">
-      <template #headerActions>
-        <v-switch
-          v-model="pendingIsOpen"
-          color="white"
-          inset
-          hide-details
-          @click="onToggleAttempt"
-        />
-      </template>
+    <StaffAlerts
+      :service-error="serviceStore.error"
+      :error="error"
+      :show-empty="!loading && !tickets.length"
+      empty-text="No hay tickets en cola."
+    />
 
-      <StaffAlerts
-        :service-error="serviceStore.error"
-        :error="error"
-        :show-empty="!loading && !tickets.length"
-        empty-text="No hay tickets en cola."
+    <div class="Service state">
+      <ServiceState
+        :pending-is-open="pendingIsOpen"
+        @update:pending-is-open="pendingIsOpen = $event"
+        @toggle-attempt="onToggleAttempt"
       />
+    </div>
 
-      <div v-if="tickets.length">
-        <TicketCard
-          v-for="(t, i) in tickets"
-          :key="t.id"
-          :ticket="t"
-          :current-position="i + 1"
-          :busy="ticketsStore.isBusy(t.id)"
-          @serve="onServe"
-          @cancel="onCancel"
-          @notify="onNotify"
-        />
-      </div>
-    </AppCard>
+    <div v-if="tickets.length">
+      <TicketCard
+        v-for="(t, i) in tickets"
+        :key="t.id"
+        :ticket="t"
+        :current-position="i + 1"
+        :busy="ticketsStore.isBusy(t.id)"
+        @serve="onServe"
+        @cancel="onCancel"
+        @notify="onNotify"
+      />
+    </div>
 
     <ServiceConfirmDialog
       v-model="confirmDialog"
@@ -46,11 +42,11 @@ import { onMounted, computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useStaffTicketsStore } from '@/stores/staffTickets'
 import { useServiceStateStore } from '@/stores/serviceStore'
 import { initStaffTicketsSignalR } from '@/stores/staffTickets'
-import TicketCard from '@/components/staff/TicketCard.vue'
 
+import TicketCard from '@/components/staff/TicketCard.vue'
 import StaffAlerts from '@/components/staff/StaffAlerts.vue'
 import ServiceConfirmDialog from '@/components/staff/ServiceConfirmDialog.vue'
-import AppCard from '@/components/ui/AppCard.vue'
+import ServiceState from '@/components/staff/ServiceState.vue'
 
 const ticketsStore = useStaffTicketsStore()
 const serviceStore = useServiceStateStore()
@@ -76,12 +72,12 @@ onBeforeUnmount(() => {
   if (unsubscribe) unsubscribe()
 })
 
-function onToggleAttempt() {
+function onToggleAttempt(nextValue: boolean) {
   if (serviceStore.isOpen === null) return
+  pendingIsOpen.value = nextValue
   confirmDialog.value = true
 }
 
-/** Si se cierra el diálogo sin confirmar, revertimos el switch */
 watch(confirmDialog, (open) => {
   if (open) {
     confirmed.value = false

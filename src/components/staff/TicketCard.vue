@@ -99,21 +99,33 @@ function onCardClick() {
   <ConfirmDialog
     v-model="openServe"
     title="Servir ticket"
-    :message="`¿Confirmar atención del ticket de ${ticket.customerFullName}?`"
     @confirm="emit('serve', ticket.id)"
-  />
+    @cancel="openServe = false"
+  >
+    ¿Confirmar atención del ticket de
+    <span class="font-weight-bold">{{ ticket.customerFullName }}</span
+    >?
+  </ConfirmDialog>
 
   <ConfirmDialog
     v-model="openCancel"
     title="Cancelar ticket"
-    :message="`¿Seguro que quieres cancelar el ticket de ${ticket.customerFullName}?`"
     @confirm="emit('cancel', ticket.id)"
-  />
+    @cancel="openCancel = false"
+  >
+    ¿Seguro que quieres cancelar el ticket de
+    <span class="font-weight-bold">{{ ticket.customerFullName }}</span
+    >?
+  </ConfirmDialog>
 
   <ConfirmDialog
     v-model="openNotify"
     title="Enviar aviso"
-    :message="`Enviar notificación manual a ${ticket.customerFullName}?`"
     @confirm="emit('notify', ticket.id)"
-  />
+    @cancel="openNotify = false"
+  >
+    Enviar notificación manual a
+    <span class="font-weight-bold">{{ ticket.customerFullName }}</span
+    >?
+  </ConfirmDialog>
 </template>
