@@ -28,7 +28,7 @@ $shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
 /* ===== CSS TOKENS (source of truth for UI components) ===== */
 :root {
   --color-background: #{$color-background};
-
+  --color-dark-wood: #{$color-dark-wood};
   --color-primary: #{$color-wood};
   --color-primary-contrast: #ffffff;
 

@@ -5,9 +5,11 @@ import { useRoute } from 'vue-router'
 <template>
   <div class="app-layout">
     <header class="app-header">
-      <div class="header-content">
-        <img src="@/assets/logo.png" alt="Logo" class="logo" />
-      </div>
+      <!-- <AppHeader> -->
+        <div class="header-content">
+          <img src="@/assets/logo.png" alt="Logo" class="logo" />          
+        </div>
+      <!-- </AppHeader> -->
     </header>
 
     <main class="app-container">
@@ -24,21 +26,23 @@ import { useRoute } from 'vue-router'
 }
 
 .app-header {
-  padding: 16px;
+  border-radius: 0px 0px 19px 19px;
+  /* padding: 16px; */
   display: flex;
   justify-content: center;
-  background-color: red;
+  background-color: var(--color-background);
 }
 
 .header-content {
   max-width: 960px;
   width: 100%;
   display: flex;
+  justify-content:center;
   align-items: center;
 }
 
 .logo {
-  height: 48px;
+  height: 64px;
   object-fit: contain;
 }
 
