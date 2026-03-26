@@ -2,7 +2,7 @@
   <AppCard
     title="Unirse a la cola"
     subtitle="Introduce tus datos para crear tu turno."
-    :maxWidth="960"
+    :maxWidth="640"
   >
     <slot />
   </AppCard>

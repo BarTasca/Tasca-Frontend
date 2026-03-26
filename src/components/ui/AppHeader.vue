@@ -23,8 +23,7 @@ defineProps<{
   padding: var(--space-md);
   display: flex;
   justify-content: center;
-  align-items:center;
-  background-color: var(--color-background);
+  background-color: red;
 }
 
 .app-header__inner {
@@ -32,9 +31,8 @@ defineProps<{
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-md);
-  background-color: var(--color-background);
+  background-color: red;
 }
 
 .app-header__logo {
