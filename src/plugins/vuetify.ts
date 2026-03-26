@@ -13,23 +13,15 @@ export const vuetify = createVuetify({
     themes: {
       light: {
         colors: {
-          background: themeConfig.colors.background,
-          wood: themeConfig.colors.wood,
-          dark_Wood: themeConfig.colors.dark_Wood,
-          success: themeConfig.colors.success,
-          cancel: themeConfig.colors.cancel,
-          accent: themeConfig.colors.accent,
+          primary: themeConfig.colors.primary,
+          secondary: themeConfig.colors.secondary,
         },
       },
       dark: {
         dark: true,
         colors: {
-          background: themeConfig.colors.background,
-          wood: themeConfig.colors.wood,
-          dark_Wood: themeConfig.colors.wood,
-          success: themeConfig.colors.success,
-          cancel: themeConfig.colors.cancel,
-          accent: themeConfig.colors.accent,
+          primary: themeConfig.colors.primary,
+          secondary: themeConfig.colors.secondary,
         },
       },
     },

@@ -1,15 +1,11 @@
 // ===== COLORS =====
-$color-background: #ffffff;
-$color-wood: #B79A7B;
-$color-dark-wood: #7E6D61;
-$color-ultra-dark-wood: #2A2521;
-$color-success: #5B6E27;
-$color-cancel: #6E2727;
-$color-accent: #DE7D0B;
-
+$color-background: #f1f1f1;
+$color-wood: #8B5E3C;
+$color-success: #6C8A4B;
+$color-accent: #C97B4D;
 
 // ===== TYPOGRAPHY =====
-$font-family-base: 'Bitter', system-ui, sans-serif;
+$font-family-base: 'Inter', system-ui, sans-serif;
 $font-size-base: 16px;
 
 // ===== SPACING =====
@@ -30,9 +26,7 @@ $shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
 /* ===== CSS TOKENS (source of truth for UI components) ===== */
 :root {
   --color-background: #{$color-background};
-  --color-dark-wood: #{$color-dark-wood};
-  --color-wood: #{$color-wood};
-  --color-ultra-dark-wood: #{$color-ultra-dark-wood};
+
   --color-primary: #{$color-wood};
   --color-primary-contrast: #ffffff;
 
