@@ -31,13 +31,13 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true },
         children: [{ path: '', name: 'staff.home', component: StaffHomeView }],
       },
+      { path: 'login', name: 'login', component: LoginView },
     ],
   },
   {
     path: '/',
     component: BareLayout,
     children: [
-      { path: 'login', name: 'login', component: LoginView },
       { path: 'display', name: 'qr.display', component: DisplayQrView },
     ],
   },

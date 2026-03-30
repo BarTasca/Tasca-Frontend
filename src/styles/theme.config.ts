@@ -1,7 +1,7 @@
 export const themeConfig = {
   colors: {
     background: '#ffffff',
-    wood: '#EEE3D8',
+    wood: '#efe5d8',
     dark_Wood: '#7E6D61',
     success: '#5B6E27',
     cancel: '#6E2727',

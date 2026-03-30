@@ -8,7 +8,7 @@
         persistent-placeholder
         variant="solo-filled"
         flat
-        bg-color="#efe5d8"
+        bg-color="wood"
         class="custom-input center-input"
         hide-details
       >
@@ -23,7 +23,7 @@
           :items="phonePrefixes"
           variant="solo-filled"
           flat
-          bg-color="#efe5d8"
+          bg-color="wood"
           style="max-width: 120px"
           class="custom-input prefix-input"
           hide-details
@@ -40,7 +40,7 @@
           type="tel"
           variant="solo-filled"
           flat
-          bg-color="#efe5d8"
+          bg-color="wood"
           class="custom-input center-input flex-grow-1"
           hide-details
         >
@@ -57,7 +57,7 @@
         type="number"
         variant="solo-filled"
         flat
-        bg-color="#efe5d8"
+        bg-color="wood"
         class="custom-input center-input"
         hide-details
       >
@@ -66,19 +66,12 @@
         </template>
       </v-text-field>
 
-      <v-btn
-        type="submit"
-        color="#5B6E27"
+      <SubmitButton
+        text="Pedir mesa"
+        loadingText="Creando"
         :loading="loading"
-        :disabled="loading"
-        style="border-radius: 19px; height: 60px;"
-        size="large"
-        block
-        flat
-        class="text-white font-weight-bold mt-2"
-      >
-        {{ loading ? 'Creando…' : 'Pedir mesa' }}
-      </v-btn>
+      />
+      
       <!-- faltan las montañicas!!!! -->
     </div>
   </v-form>
@@ -86,6 +79,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import SubmitButton from '../common/SubmitButton.vue'
 
 defineProps<{ loading: boolean }>()
 const emit = defineEmits(['submit'])

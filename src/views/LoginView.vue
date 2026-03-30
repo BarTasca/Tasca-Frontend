@@ -1,7 +1,7 @@
 <template>
-  <v-container class="py-8">
-    <v-row justify="center">
-      <v-col cols="12" sm="10" md="6" lg="4">
+  <v-container class="login-view pa-0 mt-6 d-flex flex-column flex-grow-1">
+    <v-row justify="center" class="ma-0 flex-grow-1">
+      <v-col cols="12" sm="10" md="6" lg="4" class="pa-0 d-flex">
         <AppCard
           title="Acceso staff"
           subtitle="Introduce tus credenciales para entrar al panel"
@@ -46,3 +46,10 @@ async function handleSubmit(payload: { email: string; password: string }) {
   }
 }
 </script>
+
+<style scoped>
+.login-view {
+  min-height: 0;
+  overflow: hidden;
+}
+</style>
