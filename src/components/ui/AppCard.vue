@@ -3,7 +3,7 @@
   <v-card 
     elevation="3" 
     class="d-flex flex-column" 
-    style="height: 100%; width: 100%; border-radius: 19px 19px 0 0 !important; overflow: hidden;"
+    style="height: 100%; width: 100%; border-radius: 19px 19px 0 0 !important; overflow: hidden; position: relative;"
   >
     <div class="app-card__header text-white">
       <div class="app-card__header-inner">
