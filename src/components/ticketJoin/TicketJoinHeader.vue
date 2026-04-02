@@ -15,5 +15,4 @@ import AppCard from '@/components/ui/AppCard.vue'
 </script>
 
 <style scoped>
-
 </style>
