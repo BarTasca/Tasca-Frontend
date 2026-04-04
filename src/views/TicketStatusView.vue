@@ -1,40 +1,32 @@
 <template>
-  <v-container class="py-10">
-    <v-row justify="center">
-      <v-col cols="12" sm="10" md="8" lg="6">
-        <AppCard
-          title="Estado del turno"
-          subtitle="Seguimiento de tu posición en la cola."
-          :maxWidth="640"
-        >
-          <StatusError v-if="error" :error="error" class="mb-3" />
+  <CenteredLayout>
+    <AppCard title="Estado del turno" subtitle="Sigue tu posición en la cola.">
+      <StatusError v-if="error" :error="error" class="mb-3" />
 
-          <StatusLoading v-if="loading" />
+      <StatusLoading v-if="loading" />
 
-          <StatusSummary
-            v-if="status && !loading"
-            :status="status"
-            :canCancel="canCancel"
-            :loading="loading"
-            :pushSupported="store.pushSupported"
-            :pushPermission="store.pushPermission"
-            :pushEnabled="store.pushEnabled"
-            :pushLoading="store.pushLoading"
-            :pushError="store.pushError"
-            @cancel="confirmDialog = true"
-            @enable-push="onEnablePush"
-            @disable-push="onDisablePush"
-          />
-        </AppCard>
-      </v-col>
-    </v-row>
+      <StatusSummary
+       v-if="status && !loading" 
+       :status="status" 
+       />
 
-    <ConfirmCancelDialog
-      v-model="confirmDialog"
-      :loading="loading"
-      @confirm="onCancelConfirm"
-    />
-  </v-container>
+      <StatusAlerts
+        v-if="status && !loading"
+        :canCancel="canCancel"
+        :loading="loading"
+        :pushSupported="store.pushSupported"
+        :pushPermission="store.pushPermission"
+        :pushEnabled="store.pushEnabled"
+        :pushLoading="store.pushLoading"
+        :pushError="store.pushError"
+        @cancel="confirmDialog = true"
+        @enable-push="onEnablePush"
+        @disable-push="onDisablePush"
+      />
+    </AppCard>
+
+    <ConfirmCancelDialog v-model="confirmDialog" :loading="loading" @confirm="onCancelConfirm" />
+  </CenteredLayout>
 </template>
 
 <script setup lang="ts">
@@ -43,10 +35,12 @@ import { useRoute } from 'vue-router'
 import { useTicketSessionStore, initTicketSessionSignalR } from '@/stores/ticketSession'
 
 import AppCard from '@/components/ui/AppCard.vue'
+import StatusSummary from '@/components/ticketStatus/StatusSummary.vue'
 import StatusError from '@/components/ticketStatus/StatusError.vue'
 import StatusLoading from '@/components/ticketStatus/StatusLoading.vue'
-import StatusSummary from '@/components/ticketStatus/StatusSummary.vue'
+import StatusAlerts from '@/components/ticketStatus/StatusAlerts.vue'
 import ConfirmCancelDialog from '@/components/ticketStatus/ConfirmCancelDialog.vue'
+import CenteredLayout from '@/layouts/CenteredLayout.vue'
 
 const route = useRoute()
 const store = useTicketSessionStore()

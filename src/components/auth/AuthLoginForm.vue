@@ -50,12 +50,10 @@ function onSubmit() {
         required
         class="custom-input center-input"
       >
-        <!-- Candado -->
         <template #prepend-inner>
           <LockKeyhole class="lucide-icon" />
         </template>
 
-        <!-- Ojo -->
         <template #append-inner>
           <component
             :is="showPass ? EyeOff : Eye"

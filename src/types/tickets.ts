@@ -27,6 +27,7 @@ export interface TicketStatusDto {
   peopleCount: number
   createdAt: string
   notifiedAt?: string | null
+  customerFullName: string
 }
 
 export interface TicketTokenResponse {
