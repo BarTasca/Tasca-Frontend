@@ -154,15 +154,14 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
       string,
       { status: string; ahead: number; position: number; notifiedAt?: string | null }
     > = {
-      waiting: { status: 'WAITING', ahead: 3, position: 4 },
-      notified: { status: 'NOTIFIED', ahead: 0, position: 1, notifiedAt: now },
-      confirmed: { status: 'CONFIRMED', ahead: 0, position: 1 },
-      served: { status: 'SERVED', ahead: 0, position: 0 },
-      cancelled: { status: 'CANCELLED', ahead: 0, position: 0 },
-      expired: { status: 'EXPIRED', ahead: 0, position: 0 },
-      error: { status: 'WAITING', ahead: 3, position: 4 },
-      loading: { status: 'WAITING', ahead: 3, position: 4 },
-      cancel_success: { status: 'CANCELLED', ahead: 0, position: 0 },
+      waiting: { status: 'Waiting', ahead: 3, position: 4 },
+      notified: { status: 'Notified', ahead: 0, position: 1, notifiedAt: now },
+      confirmed: { status: 'Confirmed', ahead: 0, position: 1 },
+      served: { status: 'Skipped', ahead: 0, position: 0 },
+      cancelled: { status: 'Cancelled', ahead: 0, position: 0 },
+      error: { status: 'Waiting', ahead: 3, position: 4 },
+      loading: { status: 'Waiting', ahead: 3, position: 4 },
+      cancel_success: { status: 'Cancelled', ahead: 0, position: 0 },
     }
 
     if (s === 'error') {
@@ -179,6 +178,7 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
       peopleCount: 2,
       createdAt: now,
       notifiedAt: base.notifiedAt ?? null,
+      customerFullName: 'Francisco'
     } as T
   }
 

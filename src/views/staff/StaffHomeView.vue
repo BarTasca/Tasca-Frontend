@@ -1,46 +1,42 @@
 <template>
-  <v-container class="login-view pa-0 mt-6 d-flex flex-column flex-grow-1">
-    <v-row justify="center" class="ma-0 flex-grow-1">
-      <v-col cols="12" sm="10" md="6" lg="4" class="pa-0 d-flex">
-        <AppCard>
-          <StaffAlerts
-            :service-error="serviceStore.error"
-            :error="error"
-            :show-empty="!loading && !tickets.length"
-            empty-text="No hay tickets en cola."
-          />
+  <CenteredLayout>
+    <AppCard>
+      <StaffAlerts
+        :service-error="serviceStore.error"
+        :error="error"
+        :show-empty="!loading && !tickets.length"
+        empty-text="No hay tickets en cola."
+      />
 
-          <div class="Service state">
-            <ServiceState
-              :pending-is-open="pendingIsOpen"
-              @update:pending-is-open="pendingIsOpen = $event"
-              @toggle-attempt="onToggleAttempt"
-            />
-          </div>
+      <div class="Service state">
+        <ServiceState
+          :pending-is-open="pendingIsOpen"
+          @update:pending-is-open="pendingIsOpen = $event"
+          @toggle-attempt="onToggleAttempt"
+        />
+      </div>
 
-          <div v-if="tickets.length">
-            <TicketCard
-              v-for="(t, i) in tickets"
-              :key="t.id"
-              :ticket="t"
-              :current-position="i + 1"
-              :busy="ticketsStore.isBusy(t.id)"
-              @serve="onServe"
-              @cancel="onCancel"
-              @notify="onNotify"
-            />
-          </div>
+      <div v-if="tickets.length">
+        <TicketCard
+          v-for="(t, i) in tickets"
+          :key="t.id"
+          :ticket="t"
+          :current-position="i + 1"
+          :busy="ticketsStore.isBusy(t.id)"
+          @serve="onServe"
+          @cancel="onCancel"
+          @notify="onNotify"
+        />
+      </div>
 
-          <ServiceConfirmDialog
-            v-model="confirmDialog"
-            :pending-is-open="pendingIsOpen"
-            @confirm="onConfirmOk"
-            @cancel="onConfirmCancel"
-          />
-        </AppCard>
-      </v-col>
-    </v-row>
-  </v-container>
+      <ServiceConfirmDialog
+        v-model="confirmDialog"
+        :pending-is-open="pendingIsOpen"
+        @confirm="onConfirmOk"
+        @cancel="onConfirmCancel"
+      />
+    </AppCard>
+  </CenteredLayout>
 </template>
 
 <script setup lang="ts">
@@ -54,6 +50,7 @@ import StaffAlerts from '@/components/staff/StaffAlerts.vue'
 import ServiceConfirmDialog from '@/components/staff/ServiceConfirmDialog.vue'
 import ServiceState from '@/components/staff/ServiceState.vue'
 import AppCard from '@/components/ui/AppCard.vue'
+import CenteredLayout from '@/layouts/CenteredLayout.vue'
 
 const ticketsStore = useStaffTicketsStore()
 const serviceStore = useServiceStateStore()
