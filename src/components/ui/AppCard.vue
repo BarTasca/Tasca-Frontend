@@ -1,9 +1,14 @@
-
 <template>
-  <v-card 
-    elevation="3" 
-    class="d-flex flex-column" 
-    style="height: 100%; width: 100%; border-radius: 19px 19px 0 0 !important; overflow: hidden; position: relative;"
+  <v-card
+    elevation="3"
+    class="d-flex flex-column"
+    style="
+      height: 100%;
+      width: 100%;
+      border-radius: 19px 19px 0 0 !important;
+      overflow: hidden;
+      position: relative;
+    "
   >
     <div class="app-card__header text-white">
       <div class="app-card__header-inner">
@@ -15,21 +20,36 @@
         </div>
       </div>
     </div>
-    
+
     <v-card-text class="flex-grow-1 pb-10">
       <slot />
     </v-card-text>
 
     <slot name="actions" />
+
+    <footer v-if="gdpr" class="app-mountains" aria-hidden="true">
+      <div class="app-mountains__background" />
+      <div class="app-mountains__content">
+        <router-link class="app-mountains__link" :to="{ name: 'ticket.join.privacy' }">
+          Aviso legal y protección de datos
+        </router-link>
+      </div>
+    </footer>
   </v-card>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  title?: string
-  subtitle?: string
-  maxWidth?: string | number
-}>()
+const props = withDefaults(
+  defineProps<{
+    title?: string
+    subtitle?: string
+    maxWidth?: string | number
+    gdpr?: boolean
+  }>(),
+  {
+    gdpr: true,
+  },
+)
 </script>
 
 <style scoped>
@@ -64,5 +84,41 @@ defineProps<{
   opacity: 0.9;
   color: var(--color-dark-wood);
   text-align: center;
+}
+
+.app-mountains {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 160px;
+  overflow: hidden;
+}
+
+.app-mountains__background {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-background);
+  background-image: url('@/assets/oroel.svg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.app-mountains__content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 16px;
+}
+
+.app-mountains__link {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
 }
 </style>
