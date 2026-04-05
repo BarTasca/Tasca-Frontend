@@ -35,13 +35,13 @@ const routes: RouteRecordRaw[] = [
       },
       { path: 'login', name: 'login', component: LoginView },
       { path: '/ticket/:publicId', name: 'ticket.status', component: TicketStatusView },
+      { path: 'display', name: 'qr.display', component: DisplayQrView },
     ],
   },
   {
     path: '/',
     component: BareLayout,
     children: [
-      { path: 'display', name: 'qr.display', component: DisplayQrView },
     ],
   },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
