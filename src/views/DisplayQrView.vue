@@ -1,11 +1,7 @@
 <template>
-  <DisplayLayout>
-    <template #header>
-      <DisplayHeader />
-    </template>
-
+  <CenteredLayout :width=8>
     <AppCard
-      :maxWidth="640"
+      :maxWidth="960"
       title="Escanea para unirte a la cola"
       subtitle="El QR se renueva automáticamente."
     >
@@ -17,12 +13,9 @@
       />
 
       <template #actions>
-        <DisplayFooter>
-          <span class="text-caption">Mantén esta pantalla visible en la vitrina.</span>
-        </DisplayFooter>
       </template>
     </AppCard>
-  </DisplayLayout>
+  </CenteredLayout>
 </template>
 
 <style>
@@ -43,6 +36,7 @@ import DisplayHeader from '@/components/display/DisplayHeader.vue'
 import DisplayQrBlock from '@/components/display/DisplayQrBlock.vue'
 import DisplayFooter from '@/components/display/DisplayFooter.vue'
 import { getCurrentQrToken } from '@/services/qr'
+import CenteredLayout from '@/layouts/CenteredLayout.vue'
 
 const router = useRouter()
 

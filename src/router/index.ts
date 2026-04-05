@@ -18,6 +18,7 @@ import BareLayout from '@/layouts/BareLayout.vue'
 import StyleGuideView from '@/views/StyleGuideView.vue'
 import { isDevPreviewEnabled } from '@/config/env'
 import DevHubView from '@/views/DevHubView.vue'
+import privacyPolicyView from '@/views/PrivacyPolicyView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -25,6 +26,7 @@ const routes: RouteRecordRaw[] = [
     component: DefaultLayout,
     children: [
       { path: '', name: 'ticket.join', component: TicketJoinView, alias: ['/join'] },
+      { path: 'datos-proteccion', name: 'ticket.join.privacy', component: privacyPolicyView },
       {
         path: 'staff',
         component: RouterView,
@@ -33,13 +35,13 @@ const routes: RouteRecordRaw[] = [
       },
       { path: 'login', name: 'login', component: LoginView },
       { path: '/ticket/:publicId', name: 'ticket.status', component: TicketStatusView },
+      { path: 'display', name: 'qr.display', component: DisplayQrView },
     ],
   },
   {
     path: '/',
     component: BareLayout,
     children: [
-      { path: 'display', name: 'qr.display', component: DisplayQrView },
     ],
   },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },

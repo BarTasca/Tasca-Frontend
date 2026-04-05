@@ -1,6 +1,6 @@
 <template>
   <CenteredLayout>
-    <AppCard>
+    <AppCard :gdpr=false>
       <StaffAlerts
         :service-error="serviceStore.error"
         :error="error"
