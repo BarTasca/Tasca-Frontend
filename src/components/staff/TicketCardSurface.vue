@@ -6,7 +6,6 @@
     :style="surfaceStyle"
     @click="onClick"
   >
-<<<<<<< HEAD
     <v-card-item class="ticket-card-item">
       <div class="ticket-row">
         <div class="ticket-position-wrap">
@@ -50,18 +49,6 @@
           >
             <Bell class="ticket-icon ticket-bell-icon" :stroke-width="2.5" />
           </v-btn>
-=======
-    <v-card-item>
-      <div class="d-flex align-center justify-space-between">
-        <div class="d-flex align-center ga-3">
-          <v-chip color="primary" variant="flat" size="small"> #{{ displayPos }} </v-chip>
-          <div class="text-subtitle-2 font-weight-medium">{{ customerName }}</div>
-        </div>
-
-        <div class="d-flex align-center ga-2">
-          <v-progress-circular v-if="busy" indeterminate size="16" width="2" />
-          <v-chip size="small" variant="tonal">{{ peopleCount }} pers.</v-chip>
->>>>>>> b37622cb9fe24df96b7b6434e1a986826b3777d8
         </div>
       </div>
 
