@@ -1,7 +1,9 @@
 const SW_URL = '/sw.js'
 
 export async function registerPushServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof window === 'undefined') return null
   if (!('serviceWorker' in navigator)) return null
+  if (!window.isSecureContext && window.location.hostname !== 'localhost') return null
 
   try {
     const registration = await navigator.serviceWorker.register(SW_URL)
@@ -15,6 +17,7 @@ export async function registerPushServiceWorker(): Promise<ServiceWorkerRegistra
 export function isPushSupported(): boolean {
   return (
     typeof window !== 'undefined' &&
+    window.isSecureContext &&
     'serviceWorker' in navigator &&
     'PushManager' in window &&
     'Notification' in window
@@ -27,11 +30,12 @@ export function getNotificationPermission(): NotificationPermission {
 }
 
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
-  if (!('Notification' in window)) return 'denied'
+  if (typeof window === 'undefined' || !('Notification' in window)) return 'denied'
   return Notification.requestPermission()
 }
 
 export async function getPushRegistration(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof window === 'undefined') return null
   if (!('serviceWorker' in navigator)) return null
 
   try {
@@ -63,8 +67,6 @@ export async function subscribeBrowserPush(vapidPublicKey: string): Promise<Push
 
   const existing = await registration.pushManager.getSubscription()
   if (existing) return existing
-
-  console.log('[push] subscribing with vapid key', vapidPublicKey)
 
   return registration.pushManager.subscribe({
     userVisibleOnly: true,
