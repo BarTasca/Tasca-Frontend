@@ -1,6 +1,10 @@
 <template>
   <div>
-    <v-progress-circular v-if="qrValidating" indeterminate class="mb-4" />
+    <v-progress-circular
+      v-if="qrValidating"
+      indeterminate
+      class="mb-4"
+    />
 
     <v-alert
       v-if="isServiceOpen === true && !qrValidating && qrError"

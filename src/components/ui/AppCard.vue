@@ -17,6 +17,10 @@
             <div class="app-card__title">{{ title }}</div>
             <div v-if="subtitle" class="app-card__subtitle">{{ subtitle }}</div>
           </div>
+
+          <div v-if="$slots.headerActions" class="app-card__header-actions">
+            <slot name="headerActions" />
+          </div>
         </div>
       </div>
     </div>
@@ -54,7 +58,8 @@ const props = withDefaults(
 
 <style scoped>
 .app-card__header {
-  background-color: var(--color-background);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
 }
 .app-card__header-inner {
   padding: 18px 20px;
@@ -62,28 +67,26 @@ const props = withDefaults(
 .app-card__header-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 12px;
 }
 .app-card__header-text {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
   min-width: 0;
+}
+.app-card__header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
 }
 .app-card__title {
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.2;
-  color: var(--color-ultra-dark-wood);
-  text-align: center;
 }
 .app-card__subtitle {
   margin-top: 6px;
   font-size: 0.95rem;
   opacity: 0.9;
-  color: var(--color-dark-wood);
-  text-align: center;
 }
 
 .app-mountains {

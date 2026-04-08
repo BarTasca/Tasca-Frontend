@@ -7,11 +7,9 @@ const route = useRoute()
 <template>
   <div class="app-layout">
     <header class="app-header">
-      <!-- <AppHeader> -->
-        <div class="header-content">
-          <img src="@/assets/logo.png" alt="Logo" class="logo" />          
-        </div>
-      <!-- </AppHeader> -->
+      <div class="header-content">
+        <img src="@/assets/logo.png" alt="Logo" class="logo" />
+      </div>
     </header>
 
     <main class="app-container">
@@ -28,33 +26,29 @@ const route = useRoute()
 }
 
 .app-header {
-  border-radius: 0px 0px 19px 19px;
-  /* padding: 16px; */
+  padding: 16px;
   display: flex;
   justify-content: center;
-  background-color: var(--color-background);
+  background-color: red;
 }
 
 .header-content {
   max-width: 960px;
   width: 100%;
   display: flex;
-  justify-content:center;
   align-items: center;
 }
 
 .logo {
-  height: 64px;
+  height: 48px;
   object-fit: contain;
 }
 
 .app-container {
-  display: flex;
-  flex-direction: column;
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  /* padding: 16px; */
+  padding: 16px;
   flex: 1;
 }
 </style>
