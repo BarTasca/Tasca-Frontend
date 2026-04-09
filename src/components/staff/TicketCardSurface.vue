@@ -76,11 +76,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-<<<<<<< HEAD
 import { Bell, User } from 'lucide-vue-next'
 
-=======
->>>>>>> b37622cb9fe24df96b7b6434e1a986826b3777d8
 const props = defineProps<{
   displayPos: number
   customerName: string
@@ -93,7 +90,6 @@ const props = defineProps<{
   dragging: boolean
 }>()
 
-<<<<<<< HEAD
 const statusLabel = computed(() => {
   switch (props.status) {
     case 'WAITING':
@@ -109,8 +105,6 @@ const statusLabel = computed(() => {
   }
 })
 
-=======
->>>>>>> b37622cb9fe24df96b7b6434e1a986826b3777d8
 const emit = defineEmits<{
   (e: 'click'): void
   (e: 'notify'): void
