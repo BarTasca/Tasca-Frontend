@@ -33,6 +33,7 @@ import {
   subscribeBrowserPush,
   unsubscribeBrowserPush,
 } from '@/services/pushClient'
+import { mapCreateTicketError } from '@/lib/errorMaps/ticketErrors'
 
 interface State {
   loading: boolean
@@ -118,8 +119,8 @@ export const useTicketSessionStore = defineStore('ticketSession', {
           }
         }
 
-        this.error = e?.message ?? 'No se pudo crear el ticket'
-        throw e
+        this.error = mapCreateTicketError(e)
+        return null
       } finally {
         this.loading = false
       }
