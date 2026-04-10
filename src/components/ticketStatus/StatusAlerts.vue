@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import circleXIcon from '@/assets/circle-x.svg'
+
 defineProps<{
   canCancel: boolean
   loading: boolean
@@ -44,7 +46,18 @@ defineEmits<{
       Notificaciones activadas.
     </v-alert>
 
-    <v-alert v-if="pushError" type="error" variant="tonal" density="comfortable" class="mb-3">
+    <v-alert
+      v-if="pushError"
+      type="error"
+      variant="flat"
+      :icon="false"
+      density="comfortable"
+      class="mb-3 app-error-alert"
+    >
+      <template #prepend>
+        <img :src="circleXIcon" alt="Error" class="app-error-alert__icon" />
+      </template>
+
       {{ pushError }}
     </v-alert>
 
@@ -91,6 +104,19 @@ defineEmits<{
 </template>
 
 <style scoped lang="scss">
+.app-error-alert {
+  border-radius: 19px;
+  background-color: var(--color-error) !important;
+  color: var(--color-ultra-dark-wood) !important;
+  font-weight: 700;
+}
+
+.app-error-alert__icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
 .app-button {
   border-radius: 19px;
   height: 60px !important;

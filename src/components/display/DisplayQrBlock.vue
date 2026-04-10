@@ -6,10 +6,15 @@
       <v-alert
         v-else-if="error"
         type="error"
-        variant="tonal"
+        variant="flat"
+        :icon="false"
         density="comfortable"
-        class="w-100"
+        class="w-100 app-error-alert"
       >
+        <template #prepend>
+          <img :src="circleXIcon" alt="Error" class="app-error-alert__icon" />
+        </template>
+
         {{ error }}
       </v-alert>
 
@@ -28,6 +33,8 @@
 </template>
 
 <script setup lang="ts">
+import circleXIcon from '@/assets/circle-x.svg'
+
 defineProps<{
   loading: boolean
   error: string | null
@@ -59,5 +66,18 @@ defineProps<{
 .qr-countdown {
   font-size: 12px;
   opacity: 0.9;
+}
+
+.app-error-alert {
+  border-radius: 19px;
+  background-color: var(--color-error) !important;
+  color: var(--color-ultra-dark-wood) !important;
+  font-weight: 700;
+}
+
+.app-error-alert__icon {
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 </style>
