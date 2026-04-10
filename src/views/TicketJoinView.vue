@@ -9,7 +9,7 @@
         :isServiceOpen="store.isServiceOpen"
         :qrValidating="qrValidating"
         :qrError="qrError"
-        :submitError="error"
+        :submitError="store.error"
         :queueAhead="store.queueAhead"
       />
 
@@ -21,7 +21,6 @@
     </TicketJoinHeader>
   </v-container>
 </template>
-
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
@@ -38,7 +37,6 @@ const router = useRouter()
 const route = useRoute()
 
 const loading = ref(false)
-const error = ref<string | null>(null)
 
 const qrValidating = ref(false)
 const qrValid = ref(false)
@@ -81,7 +79,7 @@ onUnmounted(async () => {
 
 async function handleSubmit(payload: any) {
   loading.value = true
-  error.value = null
+  store.error = null
 
   try {
     const qrToken = getQrTokenFromUrl()
@@ -100,8 +98,6 @@ async function handleSubmit(payload: any) {
     if (!created) return
 
     router.replace({ name: 'ticket.status', params: { publicId: created.publicId } })
-  } catch (e: any) {
-    error.value = e?.message ?? 'Error al crear el turno'
   } finally {
     loading.value = false
   }

@@ -61,7 +61,7 @@ export async function apiFetch<T>(path: string, init: ApiInit = {}): Promise<T> 
   if (res.ok) {
     if (res.status === 204) return undefined as unknown as T
     const ct = res.headers.get('content-type') ?? ''
-    if (ct.includes('application/json')) {
+    if (isJsonContentType(ct)) {
       return (await res.json()) as T
     }
     return (await res.text()) as unknown as T
@@ -69,19 +69,43 @@ export async function apiFetch<T>(path: string, init: ApiInit = {}): Promise<T> 
 
   const ct = res.headers.get('content-type') ?? ''
   let payload: unknown = undefined
-  if (ct.includes('application/json')) {
+  if (isJsonContentType(ct)) {
     try {
       payload = await res.json()
     } catch {}
   }
-  const msg =
-    (payload as any)?.error ||
-    (payload as any)?.message ||
-    (payload as any)?.title ||
-    `HTTP ${res.status}`
+  const msg = extractApiErrorMessage(payload, res.status)
 
   throw new ApiError(msg, res.status, url, payload)
 }
+
+function extractApiErrorMessage(payload: unknown, status: number): string {
+  const p = payload as any
+
+  if (!p) return `HTTP ${status}`
+
+  if (typeof p.error === 'string' && p.error.trim()) return p.error
+  if (typeof p.message === 'string' && p.message.trim()) return p.message
+
+  if (p.errors && typeof p.errors === 'object') {
+    const firstEntry = Object.values(p.errors).find(
+      (value): value is string[] => Array.isArray(value) && value.length > 0,
+    )
+
+    if (firstEntry?.length) return firstEntry[0]
+  }
+
+  if (typeof p.title === 'string' && p.title.trim()) return p.title
+
+  return `HTTP ${status}`
+}
+
+function isJsonContentType(contentType: string): boolean {
+  const ct = contentType.toLowerCase()
+  return ct.includes('application/json') || ct.includes('+json')
+}
+
+//-------- DEV MODE --------
 
 function devMock<T>(path: string, scenario: string | null): T | undefined {
   // ---- TicketJoin submit mocks ----
@@ -178,7 +202,7 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
       peopleCount: 2,
       createdAt: now,
       notifiedAt: base.notifiedAt ?? null,
-      customerFullName: 'Francisco'
+      customerFullName: 'Francisco',
     } as T
   }
 
@@ -248,7 +272,7 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
     } as T
   }
 
-    // ---- Auth (Login) mocks ----
+  // ---- Auth (Login) mocks ----
 
   if (path === '/api/auth/login') {
     if (scenario === 'login_error') {
@@ -269,7 +293,7 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
     } as T
   }
 
-    // ---- Staff tickets mocks ----
+  // ---- Staff tickets mocks ----
 
   if (path === '/api/staff/tickets') {
     if (scenario === 'staff_loading') {
@@ -350,7 +374,7 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
     return undefined as unknown as T
   }
 
-    // ---- ServiceState mocks (staff + client) ----
+  // ---- ServiceState mocks (staff + client) ----
 
   if (path === '/api/ServiceState') {
     // GET
