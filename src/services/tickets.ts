@@ -66,9 +66,13 @@ export async function getQueueAhead(): Promise<QueueAheadDto> {
   return apiFetch<QueueAheadDto>('/api/Tickets/ahead', { method: 'GET' })
 }
 
-export async function updateTicket(id: number, peopleCount: number): Promise<void> {
-  await apiFetch<void>(`/api/tickets/${id}`, {
+export async function updateOwnTicketPeopleCount(
+  publicId: string,
+  peopleCount: number,
+): Promise<TicketDetailDto> {
+  return apiFetch<TicketDetailDto>(`/api/Tickets/${publicId}/people-count`, {
     method: 'PUT',
+    auth: 'ticket',
     json: { peopleCount },
   })
 }

@@ -8,6 +8,7 @@ import {
   cancelTicketByClient,
   ensureTicketTokenFor,
   getQueueAhead,
+  updateOwnTicketPeopleCount,
 } from '@/services/tickets'
 import type { CreateTicketDto, TicketStatusDto } from '@/types/tickets'
 import { ensureAuth, registerTicketEventHandlers, joinTicketGroup } from '@/services/signalR'
@@ -312,6 +313,21 @@ export const useTicketSessionStore = defineStore('ticketSession', {
         return false
       } finally {
         this.pushLoading = false
+      }
+    },
+
+    async updatePeopleCountByClient(publicId: string, peopleCount: number): Promise<boolean> {
+      this.loading = true
+      this.error = null
+
+      try {
+        await updateOwnTicketPeopleCount(publicId, peopleCount)
+        return true
+      } catch (e: any) {
+        this.error = e?.message ?? 'No se pudo actualizar el número de personas'
+        return false
+      } finally {
+        this.loading = false
       }
     },
   },

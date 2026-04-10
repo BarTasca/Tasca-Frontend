@@ -6,9 +6,12 @@
       <StatusLoading v-if="loading" />
 
       <StatusSummary
-       v-if="status && !loading" 
-       :status="status" 
-       />
+        v-if="status && !loading"
+        :status="status"
+        :editable="canEditPeople"
+        :busy="loading"
+        @edit-people="editDialog = true"
+      />
 
       <StatusAlerts
         v-if="status && !loading"
@@ -26,6 +29,12 @@
     </AppCard>
 
     <ConfirmCancelDialog v-model="confirmDialog" :loading="loading" @confirm="onCancelConfirm" />
+    <EditPeopleCountDialog
+      v-model="editDialog"
+      :loading="loading"
+      :initial-people-count="status?.peopleCount ?? 1"
+      @confirm="onEditPeopleConfirm"
+    />
   </CenteredLayout>
 </template>
 
@@ -33,6 +42,7 @@
 import { onMounted, watch, computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTicketSessionStore, initTicketSessionSignalR } from '@/stores/ticketSession'
+import EditPeopleCountDialog from '@/components/ticketStatus/EditPeopleCountDialog.vue'
 
 import AppCard from '@/components/ui/AppCard.vue'
 import StatusSummary from '@/components/ticketStatus/StatusSummary.vue'
@@ -52,8 +62,14 @@ const publicId = computed(() => String(route.params.publicId ?? ''))
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
 const status = computed(() => store.status)
+const editDialog = ref(false)
 
 const canCancel = computed(() => {
+  const s = status.value?.status?.toLowerCase?.() ?? ''
+  return s === 'waiting' || s === 'notified'
+})
+
+const canEditPeople = computed(() => {
   const s = status.value?.status?.toLowerCase?.() ?? ''
   return s === 'waiting' || s === 'notified'
 })
@@ -92,6 +108,15 @@ async function onEnablePush() {
 async function onDisablePush() {
   if (!publicId.value) return
   await store.disablePushForTicket(publicId.value)
+}
+
+async function onEditPeopleConfirm(peopleCount: number) {
+  if (!publicId.value) return
+
+  const ok = await store.updatePeopleCountByClient(publicId.value, peopleCount)
+  if (ok) {
+    editDialog.value = false
+  }
 }
 
 watch(publicId, load)

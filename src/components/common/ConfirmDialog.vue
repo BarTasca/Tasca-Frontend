@@ -1,11 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps<{
-  modelValue: boolean
-  title: string
-  message?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean
+    title: string
+    message?: string
+    confirmText?: string
+    cancelText?: string
+    confirmLoading?: boolean
+    confirmDisabled?: boolean
+  }>(),
+  {
+    confirmText: 'Confirmar',
+    cancelText: 'Cancelar',
+    confirmLoading: false,
+    confirmDisabled: false,
+  },
+)
 
 const emit = defineEmits<{
   (e: 'update:modelValue', v: boolean): void
@@ -17,6 +29,11 @@ const model = computed({
   get: () => props.modelValue,
   set: (v: boolean) => emit('update:modelValue', v),
 })
+
+function onCancel() {
+  emit('cancel')
+  emit('update:modelValue', false)
+}
 </script>
 
 <template>
@@ -31,10 +48,19 @@ const model = computed({
       </v-card-text>
 
       <v-card-actions class="justify-space-between px-8 pb-4">
-        <v-btn color="cancel" variant="flat" rounded="xl" @click="emit('cancel')"> Cancelar </v-btn>
+        <v-btn color="cancel" variant="flat" rounded="xl" @click="onCancel">
+          {{ cancelText }}
+        </v-btn>
 
-        <v-btn color="success" variant="flat" rounded="xl" @click="emit('confirm')">
-          Confirmar
+        <v-btn
+          color="success"
+          variant="flat"
+          rounded="xl"
+          :loading="confirmLoading"
+          :disabled="confirmDisabled"
+          @click="emit('confirm')"
+        >
+          {{ confirmText }}
         </v-btn>
       </v-card-actions>
     </v-card>
