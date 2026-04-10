@@ -1,9 +1,9 @@
 <template>
-  <CenteredLayout :width=8>
+  <CenteredLayout :width=12>
     <AppCard
-      :maxWidth="960"
       title="Escanea para unirte a la cola"
       subtitle="El QR se renueva automáticamente."
+      :gdpr = false
     >
       <DisplayQrBlock
         :loading="loading"
