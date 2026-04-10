@@ -5,10 +5,15 @@
     <v-alert
       v-if="isServiceOpen === true && !qrValidating && qrError"
       type="error"
-      variant="tonal"
+      variant="flat"
+      :icon="false"
       density="comfortable"
-      class="mb-4"
+      class="mb-4 app-error-alert"
     >
+      <template #prepend>
+        <img :src="circleXIcon" alt="Error" class="app-error-alert__icon" />
+      </template>
+
       {{ qrError }}
     </v-alert>
 
@@ -25,10 +30,15 @@
     <v-alert
       v-if="submitError && isServiceOpen !== false"
       type="error"
-      variant="tonal"
+      variant="flat"
+      :icon="false"
       density="comfortable"
-      class="mb-4"
+      class="mb-4 app-error-alert"
     >
+      <template #prepend>
+        <img :src="circleXIcon" alt="Error" class="app-error-alert__icon" />
+      </template>
+
       {{ submitError }}
     </v-alert>
     <v-alert
@@ -68,6 +78,7 @@
 
 <script setup lang="ts">
 import type { QueueAheadDto } from '@/types/queue'
+import circleXIcon from '@/assets/circle-x.svg'
 
 defineProps<{
   isServiceOpen: boolean | null
@@ -77,3 +88,18 @@ defineProps<{
   queueAhead: QueueAheadDto | null
 }>()
 </script>
+
+<style scoped>
+.app-error-alert {
+  border-radius: 19px;
+  background-color: var(--color-error) !important;
+  color: var(--color-ultra-dark-wood) !important;
+  font-weight: 700;
+}
+
+.app-error-alert__icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+</style>

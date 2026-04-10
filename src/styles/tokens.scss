@@ -6,6 +6,7 @@ $color-ultra-dark-wood: #2A2521;
 $color-success: #5B6E27;
 $color-cancel: #6E2727;
 $color-accent: #DE7D0B;
+$color-error:#ffa7a7;
 
 
 // ===== TYPOGRAPHY =====
@@ -34,6 +35,7 @@ $shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
   --color-wood: #{$color-wood};
   --color-ultra-dark-wood: #{$color-ultra-dark-wood};
   --color-primary: #{$color-wood};
+  --color-error: #{$color-error};
   --color-primary-contrast: #ffffff;
 
   --color-secondary: #{$color-success};
