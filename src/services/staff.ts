@@ -25,9 +25,10 @@ export async function notifyTicket(id: number, force = true): Promise<void> {
   });
 }
 
-export async function updateTicket(id: number, peopleCount: number): Promise<void> {
-  await apiFetch<void>(`/api/tickets/${id}`, {
+export async function updateTicketPeopleCount(id: number, peopleCount: number): Promise<void> {
+  await apiFetch<void>(`/api/staff/tickets/${id}`, {
     method: 'PUT',
+    auth: 'staff',
     json: { peopleCount },
   })
 }

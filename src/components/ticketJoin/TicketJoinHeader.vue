@@ -1,7 +1,7 @@
 <template>
   <AppCard
     title="Unirse a la cola"
-    subtitle="Introduce tus datos para crear tu turno."
+    subtitle="Las mesas son exclusivamente para comidas y cenas"
     :maxWidth="960"
   >
     <slot />

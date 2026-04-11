@@ -402,5 +402,32 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
     return { changed: true, isOpen: true } as T
   }
 
+  if (/^\/api\/staff\/tickets\/\d+$/.test(path)) {
+    if (scenario === 'staff_action_error') {
+      throw new ApiError('Mock error updating ticket', 500, path, { code: 'MOCK_ERROR' })
+    }
+
+    return undefined as unknown as T
+  }
+
+  if (/^\/api\/Tickets\/[^/]+\/people-count$/.test(path)) {
+    if (scenario === 'error') {
+      throw new ApiError('Mock error updating people count', 500, path, { code: 'MOCK_ERROR' })
+    }
+
+    return {
+      id: 1,
+      publicId: path.split('/')[3] ?? 'DEV',
+      peopleCount: 4,
+      position: 4,
+      status: 'Waiting',
+      createdAt: new Date().toISOString(),
+      ahead: 3,
+      customerFullName: 'Francisco',
+      notifiedAt: null,
+      confirmedAt: null,
+    } as T
+  }
+
   return undefined
 }
