@@ -26,9 +26,11 @@ import {
   unregisterTicketPushSubscription,
 } from '@/services/push'
 import {
+  getPushSupportStatus,
+  getPushUnsupportedReasonMessage,
   getExistingBrowserPushSubscription,
   getNotificationPermission,
-  isPushSupported,
+  type PushUnsupportedReason,
   requestNotificationPermission,
   subscribeBrowserPush,
   unsubscribeBrowserPush,
@@ -50,6 +52,7 @@ interface State {
   pushEnabled: boolean
   pushLoading: boolean
   pushError: string | null
+  pushUnsupportedReason: PushUnsupportedReason | null
 }
 
 export const useTicketSessionStore = defineStore('ticketSession', {
@@ -68,6 +71,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     pushEnabled: false,
     pushLoading: false,
     pushError: null,
+    pushUnsupportedReason: null,
   }),
   actions: {
     async loadServiceState(): Promise<void> {
@@ -163,6 +167,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
       this.pushEnabled = false
       this.pushLoading = false
       this.pushError = null
+      this.pushUnsupportedReason = null
     },
 
     async loadQueueAhead(): Promise<void> {
@@ -189,9 +194,10 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     },
 
     refreshPushState(): void {
-      const supported = isPushSupported()
-      this.pushSupported = supported
-      this.pushPermission = supported ? getNotificationPermission() : 'unsupported'
+      const support = getPushSupportStatus()
+      this.pushSupported = support.supported
+      this.pushPermission = support.supported ? getNotificationPermission() : 'unsupported'
+      this.pushUnsupportedReason = support.reason
     },
 
     async syncExistingPushSubscription(): Promise<void> {
@@ -218,7 +224,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
         this.refreshPushState()
 
         if (!this.pushSupported) {
-          this.pushError = 'Este navegador no soporta notificaciones push'
+          this.pushError = getPushUnsupportedReasonMessage(this.pushUnsupportedReason)
           return false
         }
 

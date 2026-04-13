@@ -15,6 +15,7 @@
         :canCancel="canCancel"
         :loading="loading"
         :pushSupported="store.pushSupported"
+        :pushUnsupportedReason="store.pushUnsupportedReason"
         :pushPermission="store.pushPermission"
         :pushEnabled="store.pushEnabled"
         :pushLoading="store.pushLoading"

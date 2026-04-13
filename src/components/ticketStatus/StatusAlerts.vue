@@ -5,6 +5,7 @@ defineProps<{
   canCancel: boolean
   loading: boolean
   pushSupported: boolean
+  pushUnsupportedReason: string | null
   pushPermission: NotificationPermission | 'unsupported'
   pushEnabled: boolean
   pushLoading: boolean
@@ -23,7 +24,12 @@ defineEmits<{
     <v-divider class="my-4" />
 
     <v-alert v-if="!pushSupported" type="info" variant="tonal" density="comfortable" class="mb-3">
-      Este navegador no soporta notificaciones push.
+      <span v-if="pushUnsupportedReason === 'ios-home-screen-required'">
+        En iPhone/iPad, añade esta web a la pantalla de inicio y ábrela desde ahí para activar notificaciones.
+      </span>
+      <span v-else>
+        Este navegador no soporta notificaciones push.
+      </span>
     </v-alert>
 
     <v-alert
