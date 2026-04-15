@@ -24,3 +24,11 @@ export async function notifyTicket(id: number, force = true): Promise<void> {
     auth: 'staff',
   });
 }
+
+export async function updateTicketPeopleCount(id: number, peopleCount: number): Promise<void> {
+  await apiFetch<void>(`/api/staff/tickets/${id}`, {
+    method: 'PUT',
+    auth: 'staff',
+    json: { peopleCount },
+  })
+}

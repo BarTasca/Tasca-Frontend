@@ -8,12 +8,19 @@ import {
   TicketX,
   Users,
   BookMarked,
+  Pencil,
 } from 'lucide-vue-next'
 import { computed } from 'vue'
 import type { TicketStatusDto } from '@/types/tickets'
 
 const { status } = defineProps<{
   status: TicketStatusDto
+  editable?: boolean
+  busy?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'edit-people'): void
 }>()
 
 const statusAlert = {
@@ -47,7 +54,7 @@ const currentStatus = computed(() => {
   <v-alert color="accent" variant="flat" class="summary-box summary-box--accent mb-4">
     <div class="summary-content">
       <Squirrel class="summary-icon" />
-      <strong>{{ status.ahead }} por delanste</strong>
+      <strong>{{ status.ahead }} por delante</strong>
     </div>
   </v-alert>
 
@@ -63,6 +70,17 @@ const currentStatus = computed(() => {
       <div class="summary-content summary-content--small">
         <Users class="summary-icon summary-icon--small" />
         <strong>{{ status.peopleCount }}</strong>
+
+        <v-btn
+          v-if="editable"
+          size="xl-small"
+          variant="text"
+          :disabled="busy"
+          @click.stop="emit('edit-people')"
+          class="summary-icon"
+        >
+          <Pencil />
+        </v-btn>
       </div>
     </v-alert>
 

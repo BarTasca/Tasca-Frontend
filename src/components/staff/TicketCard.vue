@@ -24,6 +24,7 @@ const emit = defineEmits<{
   (e: 'serve', id: number): void
   (e: 'cancel', id: number): void
   (e: 'notify', id: number): void
+  (e: 'edit', ticket: StaffTicket): void
 }>()
 
 const startX = ref(0)
@@ -33,6 +34,11 @@ const dragging = ref(false)
 const openServe = ref(false)
 const openCancel = ref(false)
 const openNotify = ref(false)
+
+let pressTimer: number | null = null
+
+const LONG_PRESS_MS = 500
+const MOVE_CANCEL_LONG_PRESS = 10
 
 const THRESH = 80
 const CLICK_TOLERANCE = 6
@@ -47,20 +53,44 @@ const isBusy = computed(() => !!props.busy)
 
 function onStart(ev: TouchEvent) {
   if (isBusy.value) return
+
   startX.value = ev.touches[0].clientX
   dragX.value = 0
   dragging.value = true
+
+  if (pressTimer) {
+    clearTimeout(pressTimer)
+    pressTimer = null
+  }
+
+  pressTimer = window.setTimeout(() => {
+    emitEdit()
+    pressTimer = null
+  }, LONG_PRESS_MS)
 }
 
 function onMove(ev: TouchEvent) {
   if (isBusy.value) return
+
   const dx = ev.touches[0].clientX - startX.value
   dragX.value = Math.min(0, dx)
+
+  if (Math.abs(dx) > MOVE_CANCEL_LONG_PRESS && pressTimer) {
+    clearTimeout(pressTimer)
+    pressTimer = null
+  }
 }
 
 function onEnd() {
   if (isBusy.value) return
+
+  if (pressTimer) {
+    clearTimeout(pressTimer)
+    pressTimer = null
+  }
+
   dragging.value = false
+
   if (dragX.value < -THRESH) openCancel.value = true
   dragX.value = 0
 }
@@ -69,6 +99,10 @@ function onCardClick() {
   if (isBusy.value) return
   if (Math.abs(dragX.value) > CLICK_TOLERANCE || dragging.value) return
   openServe.value = true
+}
+
+function emitEdit() {
+  emit('edit', props.ticket)
 }
 </script>
 
@@ -128,4 +162,5 @@ function onCardClick() {
     <span class="font-weight-bold">{{ ticket.customerFullName }}</span
     >?
   </ConfirmDialog>
+
 </template>

@@ -5,6 +5,7 @@ import {
   skipTicket,
   cancelTicket,
   notifyTicket,
+  updateTicketPeopleCount,
 } from '@/services/staff'
 import type { TicketStaffListDto } from '@/types/staff'
 import { ensureAuth, joinStaffGroup, registerStaffEventHandlers } from '@/services/signalR'
@@ -33,7 +34,7 @@ export const useStaffTicketsStore = defineStore('staffTickets', {
       if (on) {
         if (!this.busyIds.includes(id)) this.busyIds.push(id)
       } else {
-        this.busyIds = this.busyIds.filter(x => x !== id)
+        this.busyIds = this.busyIds.filter((x) => x !== id)
       }
     },
 
@@ -88,7 +89,7 @@ export const useStaffTicketsStore = defineStore('staffTickets', {
         await cancelTicket(id)
         ui.showSnack('Ticket cancelado', 'success')
       } catch (e: any) {
-        const msg = e?.message ?? 'Error al cancelar ticket' 
+        const msg = e?.message ?? 'Error al cancelar ticket'
         this.error = msg
         ui.showSnack(msg, 'error')
         throw e
@@ -105,6 +106,23 @@ export const useStaffTicketsStore = defineStore('staffTickets', {
         ui.showSnack('Aviso enviado', 'success')
       } catch (e: any) {
         const msg = e?.message ?? 'Error al avisar'
+        this.error = msg
+        ui.showSnack(msg, 'error')
+        throw e
+      } finally {
+        this.setBusy(id, false)
+      }
+    },
+
+    async actUpdatePeopleCount(id: number, peopleCount: number): Promise<void> {
+      const ui = useUiStore()
+      this.setBusy(id, true)
+
+      try {
+        await updateTicketPeopleCount(id, peopleCount)
+        ui.showSnack('Número de personas actualizado', 'success')
+      } catch (e: any) {
+        const msg = e?.message ?? 'Error al actualizar el número de personas'
         this.error = msg
         ui.showSnack(msg, 'error')
         throw e
