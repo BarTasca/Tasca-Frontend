@@ -3,8 +3,8 @@
     <v-progress-circular indeterminate />
   </div>
 
-  <v-container v-else fluid class="pa-0 mt-6 d-flex flex-column flex-grow-1">
-    <TicketJoinHeader class="flex-grow-1">
+  <CenteredLayout v-else>
+    <TicketJoinHeader>
       <TicketJoinAlerts
         :isServiceOpen="store.isServiceOpen"
         :qrValidating="qrValidating"
@@ -19,7 +19,7 @@
         @submit="handleSubmit"
       />
     </TicketJoinHeader>
-  </v-container>
+  </CenteredLayout>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +31,7 @@ import { apiFetch, ApiError } from '@/lib/http'
 import TicketJoinHeader from '@/components/ticketJoin/TicketJoinHeader.vue'
 import TicketJoinAlerts from '@/components/ticketJoin/TicketJoinAlerts.vue'
 import TicketJoinForm from '@/components/ticketJoin/TicketJoinForm.vue'
+import CenteredLayout from '@/layouts/CenteredLayout.vue'
 
 const store = useTicketSessionStore()
 const router = useRouter()

@@ -1,14 +1,7 @@
 <template>
   <v-card
     elevation="3"
-    class="d-flex flex-column"
-    style="
-      height: 100%;
-      width: 100%;
-      border-radius: 19px 19px 0 0 !important;
-      overflow: hidden;
-      position: relative;
-    "
+    class="app-card d-flex flex-column"
   >
     <div class="app-card__header text-white">
       <div class="app-card__header-inner">
@@ -21,7 +14,7 @@
       </div>
     </div>
 
-    <v-card-text class="flex-grow-1 pb-10">
+    <v-card-text class="app-card__content flex-grow-1">
       <slot />
     </v-card-text>
 
@@ -53,24 +46,36 @@ const props = withDefaults(
 </script>
 
 <style scoped>
+.app-card {
+  width: 100%;
+  border-radius: 19px 19px 0 0 !important;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
 .app-card__header {
   background-color: var(--color-background);
 }
+
 .app-card__header-inner {
   padding: 18px 20px;
 }
+
 .app-card__header-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
 }
+
 .app-card__header-text {
   display: flex;
   justify-content: center;
   flex-direction: column;
   min-width: 0;
 }
+
 .app-card__title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -78,6 +83,7 @@ const props = withDefaults(
   color: var(--color-ultra-dark-wood);
   text-align: center;
 }
+
 .app-card__subtitle {
   margin-top: 6px;
   font-size: 0.95rem;
@@ -86,12 +92,15 @@ const props = withDefaults(
   text-align: center;
 }
 
+.app-card__content {
+  padding-bottom: 24px !important;
+  min-height: 0;
+}
+
 .app-mountains {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: relative;
   height: 160px;
+  flex-shrink: 0;
   overflow: hidden;
 }
 
@@ -113,12 +122,27 @@ const props = withDefaults(
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
 }
 
 .app-mountains__link {
   color: #ffffff;
   text-decoration: none;
   font-weight: 700;
+}
+
+@media (max-height: 750px) {
+  .app-mountains {
+  position: relative;
+height: clamp(110px, 20vh, 160px);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+}
+
+@media (max-height: 680px) {
+  .app-card__header-inner {
+    padding: 14px 16px;
+  }
 }
 </style>

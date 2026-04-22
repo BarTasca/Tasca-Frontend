@@ -1,7 +1,7 @@
 <template>
-  <v-container class="pa-0 mt-6 d-flex flex-column flex-grow-1">
-    <v-row justify="center" class="ma-0 flex-grow-1">
-      <v-col :cols="12" :md="width" class="pa-0 d-flex">
+  <v-container class="centered-layout pa-0 mt-6">
+    <v-row justify="center" class="ma-0">
+      <v-col :cols="12" :md="width" class="pa-0 d-flex flex-column">
         <slot />
       </v-col>
     </v-row>
@@ -18,3 +18,15 @@ withDefaults(
   },
 )
 </script>
+
+<style scoped>
+.centered-layout {
+  width: 100%;
+}
+
+@media (max-height: 700px) {
+  .centered-layout {
+    margin-top: 12px !important;
+  }
+}
+</style>
