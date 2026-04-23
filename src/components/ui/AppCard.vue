@@ -51,7 +51,8 @@ const props = withDefaults(
   border-radius: 19px 19px 0 0 !important;
   overflow: hidden;
   position: relative;
-  min-height: 0;
+  min-height: 100%;
+  height: 100%;
 }
 
 .app-card__header {
@@ -95,11 +96,13 @@ const props = withDefaults(
 .app-card__content {
   padding-bottom: 24px !important;
   min-height: 0;
+  overflow-y: auto;
 }
 
 .app-mountains {
   position: relative;
   height: 160px;
+  margin-top: auto;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -133,11 +136,8 @@ const props = withDefaults(
 
 @media (max-height: 750px) {
   .app-mountains {
-  position: relative;
-height: clamp(110px, 20vh, 160px);
-  flex-shrink: 0;
-  overflow: hidden;
-}
+    height: clamp(96px, 17vh, 140px);
+  }
 }
 
 @media (max-height: 680px) {
