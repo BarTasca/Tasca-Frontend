@@ -72,7 +72,6 @@
         :loading="loading"
       />
       
-      <!-- faltan las montañicas!!!! -->
     </div>
   </v-form>
 </template>

@@ -23,12 +23,14 @@ const route = useRoute()
 <style scoped>
 .app-layout {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .app-header {
   border-radius: 0px 0px 19px 19px;
+  margin-bottom: 20px;
   /* padding: 16px; */
   display: flex;
   justify-content: center;
@@ -56,5 +58,6 @@ const route = useRoute()
   margin: 0 auto;
   /* padding: 16px; */
   flex: 1;
+  min-height: 0;
 }
 </style>
