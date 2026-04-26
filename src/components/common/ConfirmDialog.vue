@@ -10,12 +10,14 @@ const props = withDefaults(
     cancelText?: string
     confirmLoading?: boolean
     confirmDisabled?: boolean
+    hideCancel?: boolean
   }>(),
   {
     confirmText: 'Confirmar',
     cancelText: 'Cancelar',
     confirmLoading: false,
     confirmDisabled: false,
+    hideCancel: false,
   },
 )
 
@@ -47,8 +49,11 @@ function onCancel() {
         <slot>{{ message }}</slot>
       </v-card-text>
 
-      <v-card-actions class="justify-space-between px-8 pb-4">
-        <v-btn color="cancel" variant="flat" rounded="xl" @click="onCancel">
+      <v-card-actions
+        class="px-8 pb-4"
+        :class="hideCancel ? 'justify-center' : 'justify-space-between'"
+      >
+        <v-btn v-if="!hideCancel" color="cancel" variant="flat" rounded="xl" @click="onCancel">
           {{ cancelText }}
         </v-btn>
 

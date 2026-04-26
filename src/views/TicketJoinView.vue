@@ -20,6 +20,15 @@
       />
     </TicketJoinHeader>
   </CenteredLayout>
+  <ConfirmDialog
+    v-model="showFoodOnlyNotice"
+    title="Aviso importante"
+    confirmText="Entendido"
+    hideCancel
+    @confirm="showFoodOnlyNotice = false"
+  >
+    <p class="food-only-notice">Las mesas son exclusivamente para comidas y cenas</p>
+  </ConfirmDialog>
 </template>
 
 <script setup lang="ts">
@@ -32,6 +41,7 @@ import TicketJoinHeader from '@/components/ticketJoin/TicketJoinHeader.vue'
 import TicketJoinAlerts from '@/components/ticketJoin/TicketJoinAlerts.vue'
 import TicketJoinForm from '@/components/ticketJoin/TicketJoinForm.vue'
 import CenteredLayout from '@/layouts/CenteredLayout.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const store = useTicketSessionStore()
 const router = useRouter()
@@ -42,6 +52,8 @@ const loading = ref(false)
 const qrValidating = ref(false)
 const qrValid = ref(false)
 const qrError = ref<string | null>(null)
+
+const showFoodOnlyNotice = ref(true)
 
 let cleanupPublicSignalR: (() => void | Promise<void>) | null = null
 
@@ -119,3 +131,13 @@ async function validateQrToken(token: string): Promise<boolean> {
   }
 }
 </script>
+
+<style scoped>
+.food-only-notice {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--color-ultra-dark-wood);
+}
+</style>
