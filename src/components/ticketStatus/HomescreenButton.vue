@@ -4,7 +4,7 @@
       color="success"
       variant="flat"
       :loading="installing"
-      :disabled="!deferredPrompt || installing"
+      :disabled="!deferredPrompt || installing || alreadyInstalled"
       @click="installApp"
       block
       class="app-button text-white font-weight-bold"
@@ -13,7 +13,16 @@
     </v-btn>
 
     <v-alert
-      v-if="!deferredPrompt"
+      v-if="alreadyInstalled"
+      type="success"
+      variant="tonal"
+      density="comfortable"
+    >
+      Esta pantalla ya está añadida al inicio en este dispositivo.
+    </v-alert>
+
+    <v-alert
+      v-else-if="!deferredPrompt"
       type="info"
       variant="tonal"
       density="comfortable"
@@ -38,9 +47,32 @@ interface BeforeInstallPromptEvent extends Event {
 
 const deferredPrompt = ref<BeforeInstallPromptEvent | null>(null)
 const installing = ref(false)
+const alreadyInstalled = ref(false)
 const route = useRoute()
 let dynamicManifestUrl: string | null = null
 let originalManifestHref: string | null = null
+
+function getInstallStorageKey(): string | null {
+  const publicId = String(route.params.publicId ?? '').trim()
+  if (!publicId) return null
+  return `pwa.installed.ticket.${publicId}`
+}
+
+function isStandaloneMode(): boolean {
+  const byDisplayMode = window.matchMedia('(display-mode: standalone)').matches
+  const byIosFlag = (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+  return byDisplayMode || byIosFlag
+}
+
+function markInstalled(): void {
+  alreadyInstalled.value = true
+  deferredPrompt.value = null
+
+  const key = getInstallStorageKey()
+  if (key) {
+    localStorage.setItem(key, '1')
+  }
+}
 
 const handleInstallPrompt = (e: Event) => {
   e.preventDefault()
@@ -76,11 +108,23 @@ async function setTicketManifestStartUrl(): Promise<void> {
 
 onMounted(() => {
   window.addEventListener('beforeinstallprompt', handleInstallPrompt)
+  window.addEventListener('appinstalled', markInstalled)
+
+  const key = getInstallStorageKey()
+  if (key && localStorage.getItem(key) === '1') {
+    alreadyInstalled.value = true
+  }
+
+  if (isStandaloneMode()) {
+    markInstalled()
+  }
+
   void setTicketManifestStartUrl()
 })
 
 onUnmounted(() => {
   window.removeEventListener('beforeinstallprompt', handleInstallPrompt)
+  window.removeEventListener('appinstalled', markInstalled)
 
   const manifestLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]')
   if (manifestLink && originalManifestHref) {
@@ -96,15 +140,18 @@ onUnmounted(() => {
 })
 
 const installApp = async () => {
-  if (!deferredPrompt.value) return
+  if (!deferredPrompt.value || alreadyInstalled.value) return
 
   installing.value = true
   try {
-    deferredPrompt.value.prompt()
-    const { outcome } = await deferredPrompt.value.userChoice
+    const promptEvent = deferredPrompt.value
+    deferredPrompt.value = null
+
+    await promptEvent.prompt()
+    const { outcome } = await promptEvent.userChoice
 
     if (outcome === 'accepted') {
-      deferredPrompt.value = null
+      markInstalled()
     }
   } finally {
     installing.value = false
