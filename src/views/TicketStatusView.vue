@@ -26,6 +26,8 @@
         @enable-push="onEnablePush"
         @disable-push="onDisablePush"
       />
+
+      <HomescreenButton class="mt-4" />
     </AppCard>
 
     <ConfirmCancelDialog v-model="confirmDialog" :loading="loading" @confirm="onCancelConfirm" />
@@ -51,6 +53,7 @@ import StatusLoading from '@/components/ticketStatus/StatusLoading.vue'
 import StatusAlerts from '@/components/ticketStatus/StatusAlerts.vue'
 import ConfirmCancelDialog from '@/components/ticketStatus/ConfirmCancelDialog.vue'
 import CenteredLayout from '@/layouts/CenteredLayout.vue'
+import HomescreenButton from '@/components/ticketStatus/HomescreenButton.vue'
 
 const route = useRoute()
 const store = useTicketSessionStore()
