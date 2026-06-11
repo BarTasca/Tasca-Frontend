@@ -71,14 +71,26 @@
         loadingText="Creando"
         :loading="loading"
       />
+      <v-btn
+        variant="tonal"
+        class="mt-3 status-button"
+        style="background-color: var(--color-dark-wood); color: white;"
+        :disabled="!publicId"
+        @click="goToMyTicket"
+      >
+        Ver mi ticket
+      </v-btn>
       
     </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import SubmitButton from '../common/SubmitButton.vue'
+import { readJwtPayload } from '@/services/tickets'
+import { STORAGE_KEYS } from '@/config'
 
 defineProps<{ loading: boolean }>()
 const emit = defineEmits(['submit'])
@@ -89,6 +101,14 @@ const phone = ref('')
 const peopleCount = ref()
 const phonePrefixes = ['+34', '+33', '+351', '+49', '+44', '+39', '+41', '+43', '+376']
 
+const router = useRouter()
+
+const token = () => localStorage.getItem(STORAGE_KEYS.ticketToken)
+const publicId = computed(() => {
+  const payload = readJwtPayload(token())
+  return (payload?.ticket_public_id ?? payload?.['ticket_public_id']) || null
+})
+
 function emitSubmit() {
   emit('submit', {
     fullName: fullName.value,
@@ -96,6 +116,11 @@ function emitSubmit() {
     phone: phone.value,
     peopleCount: peopleCount.value,
   })
+}
+
+function goToMyTicket() {
+  if (!publicId.value) return
+  router.push({ name: 'ticket.status', params: { publicId: publicId.value } })
 }
 </script>
 
@@ -134,5 +159,9 @@ function emitSubmit() {
 
 :deep(.v-select .v-field__append-inner) {
   display: none;
+}
+
+:deep(.status-button) {
+  border-radius: 19px !important;
 }
 </style>
