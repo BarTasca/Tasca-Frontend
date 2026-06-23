@@ -9,6 +9,7 @@
           <div class="app-card__header-text">
             <div class="app-card__title">{{ title }}</div>
             <div v-if="subtitle" class="app-card__subtitle">{{ subtitle }}</div>
+            <div v-if="strongSubtitle" class="app-card__strong-subtitle">{{ strongSubtitle }}</div>
           </div>
         </div>
       </div>
@@ -36,6 +37,7 @@ const props = withDefaults(
   defineProps<{
     title?: string
     subtitle?: string
+    strongSubtitle?: string
     maxWidth?: string | number
     gdpr?: boolean
   }>(),
@@ -88,6 +90,15 @@ const props = withDefaults(
 .app-card__subtitle {
   margin-top: 6px;
   font-size: 0.95rem;
+  opacity: 0.9;
+  color: var(--color-dark-wood);
+  text-align: center;
+}
+
+.app-card__strong-subtitle {
+  margin-top: 6px;
+  font-size: 0.95rem;
+  font-weight: bold;
   opacity: 0.9;
   color: var(--color-dark-wood);
   text-align: center;

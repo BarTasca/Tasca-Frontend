@@ -29,7 +29,7 @@ const statusAlert = {
     icon: Hand,
   },
   Notified: {
-    text: 'Quedate cerca',
+    text: 'En breve te llamaremos',
     icon: Bell,
   },
   Confirmed: {
