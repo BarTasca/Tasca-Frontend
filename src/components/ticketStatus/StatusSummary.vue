@@ -29,7 +29,7 @@ const statusAlert = {
     icon: Hand,
   },
   Notified: {
-    text: '¡Ya puedes venir!',
+    text: 'Quedate cerca',
     icon: Bell,
   },
   Confirmed: {
@@ -54,7 +54,8 @@ const currentStatus = computed(() => {
   <v-alert color="accent" variant="flat" class="summary-box summary-box--accent mb-4">
     <div class="summary-content">
       <Squirrel class="summary-icon" />
-      <strong>{{ status.ahead }} por delante</strong>
+      <strong v-if="status.ahead != 0">{{ status.ahead }} por delante</strong>
+      <strong v-else>Eres el siguiente</strong>
     </div>
   </v-alert>
 

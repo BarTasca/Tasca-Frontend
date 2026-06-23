@@ -4,5 +4,9 @@ export interface TicketStaffListDto {
   position: number;
   status: string;
   createdAt: string;
+  confirmedAt: string | null;
+  notifiedAt: string | null;
+  cancelledAt: string | null;
   customerFullName: string;
+  
 }

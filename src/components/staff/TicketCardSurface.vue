@@ -1,3 +1,73 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+import { Bell, User } from 'lucide-vue-next'
+
+const props = defineProps<{
+  displayPos: number
+  customerName: string
+  peopleCount: number
+  status: string
+  createdAt: string
+
+  busy?: boolean
+
+  dragX: number
+  dragging: boolean
+}>()
+
+const statusLabel = computed(() => {
+  switch (props.status) {
+    case 'WAITING':
+      return 'Esperando'
+    case 'NOTIFIED':
+      return 'Notificado'
+    case 'CANCELLED':
+      return 'Cancelado'
+    case 'CONFIRMED':
+      return 'Confirmado'
+    default:
+      return props.status
+  }
+})
+
+const emit = defineEmits<{
+  (e: 'click'): void
+  (e: 'notify'): void
+  (e: 'edit-people'): void
+}>()
+
+const surfaceStyle = computed(() => ({
+  transform: `translateX(${props.dragX}px)`,
+  transition: props.dragging ? 'none' : 'transform 160ms',
+}))
+
+function onClick() {
+  emit('click')
+}
+
+function onPeopleClick() {
+  if (props.busy) return
+  emit('edit-people')
+}
+
+function formatTicketDate(value?: string | null) {
+  if (!value) return '---'
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) return '---'
+
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  return `${hours}:${minutes}`
+}
+</script>
+
 <template>
   <v-card
     class="ticket-surface"
@@ -32,14 +102,31 @@
           </div>
         </div>
 
+        <div>
+          <span class="ticket-status">{{ formatTicketDate(createdAt) }}</span>
+        </div>
+
         <div class="ticket-people">
-          <v-chip class="ticket-people-chip" size="small" variant="text">
+          <v-chip
+            class="ticket-people-chip"
+            size="small"
+            variant="text"
+            role="button"
+            tabindex="0"
+            aria-label="Editar número de personas"
+            @click.stop.prevent="onPeopleClick"
+            @keydown.enter.stop.prevent="onPeopleClick"
+            @keydown.space.stop.prevent="onPeopleClick"
+            @touchstart.stop
+            @touchmove.stop
+            @touchend.stop
+            @mousedown.stop
+          >
             <User class="ticket-icon ticket-user-icon" :stroke-width="2.5" />
             <span class="ticket-people-count">{{ peopleCount }}</span>
           </v-chip>
         </div>
-
-        <div class="ticket-action">
+        <!-- <div class="ticket-action">
           <v-btn
             class="ticket-notify-btn"
             color="dark_Wood"
@@ -50,58 +137,11 @@
           >
             <Bell class="ticket-icon ticket-bell-icon" :stroke-width="2.5" />
           </v-btn>
-        </div>
+        </div> -->
       </div>
     </v-card-item>
   </v-card>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-
-import { Bell, User } from 'lucide-vue-next'
-
-const props = defineProps<{
-  displayPos: number
-  customerName: string
-  peopleCount: number
-  status: string
-
-  busy?: boolean
-
-  dragX: number
-  dragging: boolean
-}>()
-
-const statusLabel = computed(() => {
-  switch (props.status) {
-    case 'WAITING':
-      return 'Esperando'
-    case 'NOTIFIED':
-      return 'Notificado'
-    case 'CANCELLED':
-      return 'Cancelado'
-    case 'CONFIRMED':
-      return 'Confirmado'
-    default:
-      return props.status
-  }
-})
-
-const emit = defineEmits<{
-  (e: 'click'): void
-  (e: 'notify'): void
-}>()
-
-const surfaceStyle = computed(() => ({
-  transform: `translateX(${props.dragX}px)`,
-  transition: props.dragging ? 'none' : 'transform 160ms',
-}))
-
-function onClick() {
-  emit('click')
-}
-</script>
 
 <style scoped lang="scss">
 @use '@/styles/tokens.scss' as *;
@@ -176,17 +216,44 @@ function onClick() {
 }
 
 .ticket-people-chip {
-  padding: 0;
-  min-width: auto;
+  min-width: 52px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: $radius-sm;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+
+  background: rgba($color-dark-wood, 0.15);
+  border: 1px solid rgba($color-dark-wood, 0.18);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
 }
 
-.ticket-people-count {
-  line-height: 1;
+.ticket-people-chip:hover {
+  background: rgba($color-dark-wood, 0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.ticket-people-chip:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-user-icon {
+  width: 24px;
+  height: 24px;
   color: $color-dark-wood;
 }
 
@@ -250,6 +317,9 @@ function onClick() {
   }
 
   .ticket-people-chip {
+    min-width: 48px;
+    height: 34px;
+    padding: 0 8px;
     gap: 4px;
     font-size: 0.95rem;
   }
