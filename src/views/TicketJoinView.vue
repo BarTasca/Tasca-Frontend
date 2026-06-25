@@ -36,6 +36,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useTicketSessionStore } from '@/stores/ticketSession'
 import { useRouter, useRoute } from 'vue-router'
 import { apiFetch, ApiError } from '@/lib/http'
+import { persistTicketPublicId } from '@/services/tickets'
 
 import TicketJoinHeader from '@/components/ticketJoin/TicketJoinHeader.vue'
 import TicketJoinAlerts from '@/components/ticketJoin/TicketJoinAlerts.vue'
@@ -110,6 +111,7 @@ async function handleSubmit(payload: any) {
 
     if (!created) return
 
+    persistTicketPublicId(created.publicId)
     router.replace({ name: 'ticket.status', params: { publicId: created.publicId } })
   } finally {
     loading.value = false

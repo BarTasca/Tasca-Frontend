@@ -21,6 +21,15 @@ export function persistTicketToken(token: string | null): void {
   else localStorage.removeItem(STORAGE_KEYS.ticketToken);
 }
 
+export function persistTicketPublicId(publicId: string | null): void {
+  if (publicId) localStorage.setItem(STORAGE_KEYS.ticketPublicId, publicId);
+  else localStorage.removeItem(STORAGE_KEYS.ticketPublicId);
+}
+
+export function readTicketPublicId(): string | null {
+  return localStorage.getItem(STORAGE_KEYS.ticketPublicId);
+}
+
 export async function getTicketStatus(publicId: string): Promise<TicketStatusDto> {
   return apiFetch<TicketStatusDto>(`/api/Tickets/${publicId}/status`, {
     auth: 'ticket',

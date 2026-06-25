@@ -12,6 +12,7 @@ import LoginView from '@/views/LoginView.vue'
 import StaffHomeView from '@/views/staff/StaffHomeView.vue'
 import { useAuthStore } from '@/stores/auth'
 import TicketStatusView from '@/views/TicketStatusView.vue'
+import TicketStatusRedirectView from '@/views/TicketStatusRedirectView.vue'
 import TicketJoinView from '@/views/TicketJoinView.vue'
 import DisplayQrView from '@/views/DisplayQrView.vue'
 import BareLayout from '@/layouts/BareLayout.vue'
@@ -34,6 +35,7 @@ const routes: RouteRecordRaw[] = [
         children: [{ path: '', name: 'staff.home', component: StaffHomeView }],
       },
       { path: 'login', name: 'login', component: LoginView },
+      { path: '/ticket/status', name: 'ticket.status.redirect', component: TicketStatusRedirectView },
       { path: '/ticket/:publicId', name: 'ticket.status', component: TicketStatusView },
       { path: 'display', name: 'qr.display', component: DisplayQrView },
     ],

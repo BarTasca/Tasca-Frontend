@@ -9,4 +9,5 @@ if (!API_BASE_URL) {
 export const STORAGE_KEYS = {
   staffToken: 'auth.staff.token',
   ticketToken: 'auth.ticket.token',
+  ticketPublicId: 'ticket.public.id',
 } as const;

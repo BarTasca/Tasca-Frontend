@@ -80,6 +80,15 @@
 
             <v-divider class="my-2" />
 
+            <div class="text-subtitle-1 font-weight-bold mt-2">Ticket Redirect</div>
+            <div class="d-flex flex-wrap ga-2">
+              <v-btn variant="tonal" @click="devSetTicketPublicId()">Set ticketPublicId</v-btn>
+              <v-btn variant="tonal" @click="devClearTicketPublicId()">Clear ticketPublicId</v-btn>
+              <v-btn variant="tonal" @click="openRedirect()">Open /ticket/status</v-btn>
+            </div>
+
+            <v-divider class="my-2" />
+
             <div class="text-caption opacity-70">
               Los presets navegan a rutas reales con query params. El comportamiento se simula con
               mocks (solo DEV).
@@ -187,10 +196,23 @@ function openStaff(s: StaffScenario) {
   })
 }
 
+function openRedirect() {
+  router.push({ name: 'ticket.status.redirect' })
+}
+
 function devSetStaffToken() {
   localStorage.setItem(STORAGE_KEYS.staffToken, 'DEV.STAFF.TOKEN')
 }
+
 function devClearStaffToken() {
   localStorage.removeItem(STORAGE_KEYS.staffToken)
+}
+
+function devSetTicketPublicId() {
+  localStorage.setItem(STORAGE_KEYS.ticketPublicId, 'DEV-REDIRECT-TICKET')
+}
+
+function devClearTicketPublicId() {
+  localStorage.removeItem(STORAGE_KEYS.ticketPublicId)
 }
 </script>
