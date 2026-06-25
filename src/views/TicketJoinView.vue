@@ -27,7 +27,7 @@
     hideCancel
     @confirm="showFoodOnlyNotice = false"
   >
-    <p class="food-only-notice">Las mesas son exclusivamente para comidas y cenas</p>
+    <p class="food-only-notice">Las mesas son exclusivamente para comidas y cenas<br> Si es para picar no te apuntes</p>
   </ConfirmDialog>
 </template>
 

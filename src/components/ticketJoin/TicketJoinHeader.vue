@@ -2,7 +2,6 @@
   <AppCard
     title="Unirse a la cola"
     subtitle="LAS MESAS SON EXCLUSIVAMENTE PARA COMIDAS Y CENAS"
-    strongSubtitle="SI ES PARA PICAR NO VENGAS"
     :maxWidth="960"
     class="alert-subtitle"
   >
