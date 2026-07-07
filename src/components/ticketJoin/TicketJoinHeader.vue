@@ -1,7 +1,7 @@
 <template>
   <AppCard
     title="Unirse a la cola"
-    subtitle="LAS MESAS SON EXCLUSIVAMENTE PARA COMIDAS Y CENAS"
+    :subtitle="`Llamamos de voz,\nno por teléfono`"
     :maxWidth="960"
     class="alert-subtitle"
   >
@@ -17,8 +17,10 @@ import AppCard from '@/components/ui/AppCard.vue'
 
 <style scoped>
 .alert-subtitle :deep(.app-card__subtitle){
-  font-size: 1.2rem;
+  font-size: 2rem;
   color: red;
+  font-weight: bold;
+  white-space: pre-line;
 }
 
 .alert-subtitle :deep(.app-card__strong-subtitle){
