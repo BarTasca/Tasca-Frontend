@@ -151,6 +151,8 @@ async function onEditPeopleConfirm(peopleCount: number) {
     await ticketsStore.actUpdatePeopleCount(editingTicket.value.id, peopleCount)
     editDialog.value = false
     editingTicket.value = null
-  } catch {}
+  } catch {
+    
+  }
 }
 </script>

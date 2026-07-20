@@ -4,7 +4,11 @@
       <StatusError v-if="error" :error="error" class="mb-3" />
 
       <StatusLoading v-if="loading" />
-
+      <p v-if="status && !loading" class="voice-call-notice">
+        Llamamos de voz,<br />
+        no por teléfono
+      </p>
+      
       <StatusSummary
         v-if="status && !loading"
         :status="status"
@@ -12,6 +16,7 @@
         :busy="loading"
         @edit-people="editDialog = true"
       />
+
 
       <StatusAlerts
         v-if="status && !loading"
@@ -121,3 +126,18 @@ async function onEditPeopleConfirm(peopleCount: number) {
 
 watch(publicId, load)
 </script>
+
+<style scoped>
+.voice-call-notice {
+  margin: 0 0 16px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: red;
+  text-align: center;
+}
+
+:deep(.app-card__header-inner) {
+  padding: 0px 0px;
+}
+</style>
