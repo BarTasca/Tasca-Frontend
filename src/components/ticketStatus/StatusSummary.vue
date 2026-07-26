@@ -54,7 +54,9 @@ const currentStatus = computed(() => {
   <v-alert color="accent" variant="flat" class="summary-box summary-box--accent mb-4">
     <div class="summary-content">
       <Squirrel class="summary-icon" />
-      <strong v-if="status.ahead != 0">{{ status.ahead }} por delante</strong>
+      <strong v-if="status.status == 'Cancelled'">Llamada del camarero sin respuesta. Mesa anulada</strong>
+      <strong v-else-if="status.status == 'Confirmed'">Disefruta la comida</strong>
+      <strong v-else-if="status.ahead != 0">{{ status.ahead }} por delante</strong>
       <strong v-else>Eres el siguiente</strong>
     </div>
   </v-alert>
