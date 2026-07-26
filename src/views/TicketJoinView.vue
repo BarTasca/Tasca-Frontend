@@ -28,8 +28,8 @@
     @confirm="showFoodOnlyNotice = false"
   >
     <p class="food-only-notice">
-      Las mesas son exclusivamente para comidas y cenas<br />
-      Si es para picar no te apuntes
+      <span class="food-only-notice__normal">Las mesas son exclusivamente para comidas y cenas</span><br />
+      <span class="food-only-notice__alert">Si es para picar no te apuntes</span>
     </p>
   </ConfirmDialog>
 </template>
@@ -143,6 +143,10 @@ async function validateQrToken(token: string): Promise<boolean> {
   font-size: 1.6rem;
   font-weight: 800;
   line-height: 1.25;
+  color: var(--color-ultra-dark-wood);
+}
+
+.food-only-notice__alert {
   color: red;
 }
 </style>
