@@ -49,12 +49,14 @@ function onUpdate(value: boolean | null) {
   justify-content: flex-end;
   align-items: center;
   min-height: 56px;
+  gap: 20px;
 }
 
 .status-box {
-  position: absolute;
+  // position: absolute;
   left: 35%;
-  transform: translateX(-50%);
+  // transform: translateX(-50%);
+  
 
   min-width: 200px;
   max-width: 620px;
@@ -109,4 +111,6 @@ function onUpdate(value: boolean | null) {
   width: 42px;
   height: 24px;
 }
+
+
 </style>
