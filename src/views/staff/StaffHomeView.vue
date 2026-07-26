@@ -8,7 +8,11 @@
         empty-text="No hay tickets en cola."
       />
 
-      <div class="Service state">
+      <div class="service-state-container">
+        <div class="tables-counter">
+          <div class="counter-label">Mesas: </div>
+          <div class="counter-value">{{ tickets.length }}</div>
+        </div>
         <ServiceState
           :pending-is-open="pendingIsOpen"
           @update:pending-is-open="pendingIsOpen = $event"
@@ -154,3 +158,64 @@ async function onEditPeopleConfirm(peopleCount: number) {
   } catch {}
 }
 </script>
+
+<style scoped lang="scss">
+.service-state-container {
+  display: flex;
+  justify-content: space-between;
+  min-height: 56px;
+  gap: 3rem;
+}
+
+.tables-counter {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-ultra-dark-wood);
+  padding: 10px 20px;
+  border-radius: 10px;
+  min-width: 120px;
+}
+
+.counter-label {
+  font-size: 0.85rem;
+  color: white;
+  font-weight: 500;
+  text-align: center;
+}
+
+.counter-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+
+@media (min-width: 960px){
+  .service-state-container{
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 490px ){
+  .service-state-container{
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .service-state{
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 312px ){
+  .service-state{
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+</style>
