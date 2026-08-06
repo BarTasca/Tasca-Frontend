@@ -40,6 +40,10 @@ export function mapCreateTicketError(error: unknown): string {
     return 'El servicio está cerrado en este momento.'
   }
 
+  if (error.status === 409 && code === 'DUPLICATE_NAME') {
+    return 'Este nombre ya está activo actualmente. Ya hay una persona en la cola esperando o avisada con ese nombre.'
+  }
+
   if (error.status === 410 && (code === 'QR_EXPIRED' || code === 'QR_TOKEN_REQUIRED')) {
     return 'El QR ha caducado. Vuelve a escanear el QR de la pantalla.'
   }
