@@ -134,6 +134,9 @@ function devMock<T>(path: string, scenario: string | null): T | undefined {
     if (scenario === 'submit_error_closed') {
       throw new ApiError('Service closed', 409, path, { code: 'SERVICE_CLOSED' })
     }
+    if (scenario === 'submit_error_duplicate_name') {
+      throw new ApiError('Duplicate name', 409, path, { code: 'DUPLICATE_NAME' })
+    }
     if (scenario === 'submit_error_qr') {
       throw new ApiError('QR expired', 410, path, { code: 'QR_EXPIRED' })
     }
