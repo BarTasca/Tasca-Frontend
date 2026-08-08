@@ -3,7 +3,7 @@
     <v-progress-circular v-if="qrValidating" indeterminate class="mb-4" />
 
     <v-alert
-      v-if="isServiceOpen === true && !qrValidating && qrError"
+      v-if="!qrValidating && qrError"
       type="error"
       variant="flat"
       :icon="false"
@@ -28,7 +28,7 @@
     </v-alert>
 
     <v-alert
-      v-if="submitError && isServiceOpen !== false"
+      v-if="submitError"
       type="error"
       variant="flat"
       :icon="false"

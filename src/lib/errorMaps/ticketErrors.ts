@@ -41,7 +41,7 @@ export function mapCreateTicketError(error: unknown): string {
   }
 
   if (error.status === 409 && code === 'DUPLICATE_NAME') {
-    return 'Este nombre ya está activo actualmente. Ya hay una persona en la cola esperando o avisada con ese nombre.'
+    return 'Ya hay un usuario en la lista con este nombre.'
   }
 
   if (error.status === 410 && (code === 'QR_EXPIRED' || code === 'QR_TOKEN_REQUIRED')) {

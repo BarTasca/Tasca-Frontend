@@ -14,7 +14,7 @@
       />
 
       <TicketJoinForm
-        v-if="store.isServiceOpen === true && qrValid"
+        v-if="qrValid"
         :loading="loading"
         @submit="handleSubmit"
       />
@@ -31,6 +31,16 @@
       <span class="food-only-notice__normal">Las mesas son exclusivamente para comidas y cenas</span><br />
       <span class="food-only-notice__alert">Si es para picar no te apuntes</span>
     </p>
+  </ConfirmDialog>
+
+  <ConfirmDialog
+    v-model="showServiceClosedDialog"
+    title="Servicio cerrado"
+    confirmText="Entendido"
+    hideCancel
+    @confirm="showServiceClosedDialog = false"
+  >
+    El servicio está cerrado en este momento.
   </ConfirmDialog>
 </template>
 
@@ -58,12 +68,12 @@ const qrValid = ref(false)
 const qrError = ref<string | null>(null)
 
 const showFoodOnlyNotice = ref(true)
+const showServiceClosedDialog = ref(false)
 
 let cleanupPublicSignalR: (() => void | Promise<void>) | null = null
 
 onMounted(async () => {
   await store.loadServiceState()
-  if (store.isServiceOpen !== true) return
 
   const qt = getQrTokenFromUrl()
   if (!qt) {
@@ -80,8 +90,10 @@ onMounted(async () => {
       return
     }
 
-    await store.loadQueueAhead()
-    cleanupPublicSignalR = await store.initPublicQueueSignalR()
+    if (store.isServiceOpen === true) {
+      await store.loadQueueAhead()
+      cleanupPublicSignalR = await store.initPublicQueueSignalR()
+    }
   } finally {
     qrValidating.value = false
   }
@@ -112,7 +124,10 @@ async function handleSubmit(payload: any) {
       qrToken,
     })
 
-    if (!created) return
+    if (!created) {
+      if (store.blockedByClosedService) showServiceClosedDialog.value = true
+      return
+    }
 
     persistTicketPublicId(created.publicId)
     router.replace({ name: 'ticket.status', params: { publicId: created.publicId } })
