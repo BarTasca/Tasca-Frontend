@@ -43,6 +43,7 @@ interface State {
 
   isServiceOpen: boolean | null
   serviceClosed: boolean
+  blockedByClosedService: boolean
 
   queueAhead: QueueAheadDto | null
 
@@ -61,6 +62,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
 
     isServiceOpen: null,
     serviceClosed: false,
+    blockedByClosedService: false,
 
     queueAhead: null,
 
@@ -86,14 +88,9 @@ export const useTicketSessionStore = defineStore('ticketSession', {
     async createAndInit(payload: CreateTicketDto): Promise<{ publicId: string } | null> {
       this.loading = true
       this.error = null
+      this.blockedByClosedService = false
 
       await this.loadServiceState()
-      if (this.isServiceOpen === false) {
-        this.serviceClosed = true
-        this.error = 'El servicio está cerrado'
-        this.loading = false
-        return null
-      }
 
       try {
         const created = await createTicket(payload)
@@ -110,7 +107,7 @@ export const useTicketSessionStore = defineStore('ticketSession', {
           if (e.status === 409 && code === 'SERVICE_CLOSED') {
             this.isServiceOpen = false
             this.serviceClosed = true
-            this.error = 'El servicio está cerrado'
+            this.blockedByClosedService = true
             return null
           }
 
